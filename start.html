@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام كاشير المقهى - ابدأ هنا</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Cairo', 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #3e2723 0%, #8b4513 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: 2rem;
+            padding: 3rem;
+            max-width: 900px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header i {
+            font-size: 5rem;
+            color: #8b4513;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            color: #3e2723;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #795548;
+            font-size: 1.1rem;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #fdf6e3 0%, #fff 100%);
+            border: 3px solid #d7ccc8;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(139, 69, 19, 0.2);
+            border-color: #8b4513;
+        }
+
+        .card i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .card.login i {
+            color: #8b4513;
+        }
+
+        .card.dashboard i {
+            color: #10b981;
+        }
+
+        .card.pos i {
+            color: #3b82f6;
+        }
+
+        .card h2 {
+            color: #3e2723;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: #795548;
+            font-size: 0.95rem;
+        }
+
+        .info-box {
+            background: #fef3c7;
+            border-right: 4px solid #f59e0b;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-box h3 {
+            color: #92400e;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .accounts {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .account {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .account strong {
+            color: #8b4513;
+        }
+
+        .features {
+            background: #f0fdf4;
+            border-right: 4px solid #10b981;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .features h3 {
+            color: #166534;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features li {
+            color: #166534;
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .features li i {
+            color: #10b981;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <i class="fas fa-mug-hot"></i>
+            <h1>نظام كاشير المقهى الاحترافي</h1>
+            <p>نظام نقاط بيع متكامل مع لوحة تحكم وتقارير</p>
+        </div>
+
+        <div class="cards">
+            <a href="login.html" class="card login">
+                <i class="fas fa-sign-in-alt"></i>
+                <h2>تسجيل الدخول</h2>
+                <p>ابدأ من هنا - سجل دخولك للنظام</p>
+            </a>
+
+            <a href="dashboard.html" class="card dashboard">
+                <i class="fas fa-chart-line"></i>
+                <h2>لوحة التحكم</h2>
+                <p>إحصائيات وتقارير مفصلة</p>
+            </a>
+
+            <a href="index.html" class="card pos">
+                <i class="fas fa-cash-register"></i>
+                <h2>نقطة البيع</h2>
+                <p>واجهة الكاشير</p>
+            </a>
+        </div>
+
+        <div class="info-box">
+            <h3><i class="fas fa-user-shield"></i> الحسابات التجريبية</h3>
+            <div class="accounts">
+                <div class="account">
+                    <span><strong>مدير:</strong> admin / 1234</span>
+                    <span style="color: #8b4513;">وصول كامل</span>
+                </div>
+                <div class="account">
+                    <span><strong>مشرف:</strong> supervisor / 1234</span>
+                    <span style="color: #10b981;">تقارير ومخزون</span>
+                </div>
+                <div class="account">
+                    <span><strong>كاشير:</strong> cashier / 1234</span>
+                    <span style="color: #3b82f6;">نقطة البيع</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="features">
+            <h3><i class="fas fa-star"></i> المميزات الرئيسية</h3>
+            <ul>
+                <li><i class="fas fa-check-circle"></i> نظام صلاحيات متعدد المستويات</li>
+                <li><i class="fas fa-check-circle"></i> إدارة مخزون ذكية مع تنبيهات</li>
+                <li><i class="fas fa-check-circle"></i> لوحة تحكم مع إحصائيات فورية</li>
+                <li><i class="fas fa-check-circle"></i> تقارير مبيعات مفصلة</li>
+                <li><i class="fas fa-check-circle"></i> 40+ منتج جاهز</li>
+                <li><i class="fas fa-check-circle"></i> واجهة عربية كاملة مع RTL</li>
+                <li><i class="fas fa-check-circle"></i> رسائل SweetAlert2 احترافية</li>
+                <li><i class="fas fa-check-circle"></i> طباعة فواتير احترافية</li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>

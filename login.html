@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - نظام كاشير المقهى</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #3e2723 0%, #8b4513 100%);
+        }
+
+        .login-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 450px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header i {
+            font-size: 4rem;
+            color: #8b4513;
+            margin-bottom: 1rem;
+        }
+
+        .login-header h1 {
+            color: #3e2723;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #795548;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #3e2723;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.9rem;
+            border: 2px solid #d7ccc8;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #8b4513;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: #8b4513;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-login:hover {
+            background: #6d3410;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .demo-users {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #fdf6e3;
+            border-radius: 0.5rem;
+            border-right: 4px solid #8b4513;
+        }
+
+        .demo-users h3 {
+            color: #3e2723;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .demo-user {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: white;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+        }
+
+        .demo-user strong {
+            color: #8b4513;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <i class="fas fa-mug-hot"></i>
+                <h1>نظام كاشير المقهى</h1>
+                <p>الرجاء تسجيل الدخول للمتابعة</p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">اسم المستخدم</label>
+                    <input type="text" id="username" required placeholder="أدخل اسم المستخدم">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" required placeholder="أدخل كلمة المرور">
+                </div>
+
+                <div class="form-group">
+                    <label for="role">الصلاحية</label>
+                    <select id="role" required>
+                        <option value="">اختر الصلاحية</option>
+                        <option value="cashier">كاشير</option>
+                        <option value="supervisor">مشرف</option>
+                        <option value="admin">مدير</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                </button>
+            </form>
+
+            <div class="demo-users">
+                <h3><i class="fas fa-info-circle"></i> حسابات تجريبية:</h3>
+                <div class="demo-user">
+                    <span><strong>كاشير:</strong> cashier / 1234</span>
+                </div>
+                <div class="demo-user">
+                    <span><strong>مشرف:</strong> supervisor / 1234</span>
+                </div>
+                <div class="demo-user">
+                    <span><strong>مدير:</strong> admin / 1234</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="auth.js"></script>
+</body>
+
+</html>

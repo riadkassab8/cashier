@@ -54,9 +54,38 @@ let cart = [];
 let currentCategory = 'all';
 let discountPercent = 0;
 let selectedPaymentMethod = null;
+let currentUser = null;
 
 // التهيئة
 document.addEventListener('DOMContentLoaded', function () {
+    // التحقق من تسجيل الدخول
+    const userData = localStorage.getItem('currentUser');
+    if (!userData) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    currentUser = JSON.parse(userData);
+    document.getElementById('cashierName').textContent = currentUser.name;
+
+    // إظهار زر لوحة التحكم للمدير والمشرف فقط
+    const dashboardBtn = document.getElementById('dashboardBtn');
+    if (dashboardBtn && (currentUser.role === 'admin' || currentUser.role === 'supervisor')) {
+        dashboardBtn.style.display = 'inline-block';
+    }
+
+    // تطبيق صلاحيات الكاشير
+    if (currentUser.role === 'cashier') {
+        // الكاشير لا يمكنه تطبيق خصم بدون موافقة
+        const discountBtn = document.getElementById('discountBtn');
+        if (discountBtn) {
+            discountBtn.style.display = 'none';
+        }
+    }
+
+    // تحميل المنتجات من localStorage أو استخدام القيم الافتراضية
+    loadProductsFromStorage();
+
     updateDateTime();
     setInterval(updateDateTime, 1000);
     loadProducts();
@@ -89,13 +118,37 @@ function loadProducts() {
     filteredProducts.forEach(product => {
         const productCard = document.createElement('div');
         productCard.className = 'product-card';
-        productCard.onclick = () => addToCart(product);
+
+        // تحديد لون المخزون حسب الكمية
+        let stockClass = '';
+        let stockText = `المخزون: ${product.stock}`;
+
+        if (product.stock === 0) {
+            stockClass = 'stock-out';
+            stockText = 'نفذ من المخزون';
+            productCard.style.opacity = '0.5';
+            productCard.style.cursor = 'not-allowed';
+            productCard.onclick = () => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'غير متوفر',
+                    text: 'هذا المنتج نفذ من المخزون',
+                    confirmButtonText: 'حسناً',
+                    confirmButtonColor: '#ef4444'
+                });
+            };
+        } else if (product.stock <= 10) {
+            stockClass = 'stock-low';
+            productCard.onclick = () => addToCart(product);
+        } else {
+            productCard.onclick = () => addToCart(product);
+        }
 
         productCard.innerHTML = `
             <i class="fas ${product.icon}"></i>
             <h3>${product.name}</h3>
             <div class="price">${product.price.toFixed(2)} ج.م</div>
-            <div class="stock">المخزون: ${product.stock}</div>
+            <div class="stock ${stockClass}">${stockText}</div>
         `;
 
         productsGrid.appendChild(productCard);
@@ -129,13 +182,37 @@ function searchProducts() {
     filteredProducts.forEach(product => {
         const productCard = document.createElement('div');
         productCard.className = 'product-card';
-        productCard.onclick = () => addToCart(product);
+
+        // تحديد لون المخزون حسب الكمية
+        let stockClass = '';
+        let stockText = `المخزون: ${product.stock}`;
+
+        if (product.stock === 0) {
+            stockClass = 'stock-out';
+            stockText = 'نفذ من المخزون';
+            productCard.style.opacity = '0.5';
+            productCard.style.cursor = 'not-allowed';
+            productCard.onclick = () => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'غير متوفر',
+                    text: 'هذا المنتج نفذ من المخزون',
+                    confirmButtonText: 'حسناً',
+                    confirmButtonColor: '#ef4444'
+                });
+            };
+        } else if (product.stock <= 10) {
+            stockClass = 'stock-low';
+            productCard.onclick = () => addToCart(product);
+        } else {
+            productCard.onclick = () => addToCart(product);
+        }
 
         productCard.innerHTML = `
             <i class="fas ${product.icon}"></i>
             <h3>${product.name}</h3>
             <div class="price">${product.price.toFixed(2)} ج.م</div>
-            <div class="stock">المخزون: ${product.stock}</div>
+            <div class="stock ${stockClass}">${stockText}</div>
         `;
 
         productsGrid.appendChild(productCard);
@@ -443,6 +520,9 @@ async function completePayment() {
     setTimeout(() => {
         Swal.close();
 
+        // تحديث المخزون
+        updateInventory();
+
         // إنشاء الفاتورة
         generateReceipt();
 
@@ -468,6 +548,56 @@ async function completePayment() {
     }, 1000);
 }
 
+// تحميل المنتجات من localStorage
+function loadProductsFromStorage() {
+    const savedProducts = localStorage.getItem('products');
+    if (savedProducts) {
+        const parsedProducts = JSON.parse(savedProducts);
+        // تحديث المنتجات الحالية
+        parsedProducts.forEach(savedProduct => {
+            const product = products.find(p => p.id === savedProduct.id);
+            if (product) {
+                product.stock = savedProduct.stock;
+            }
+        });
+    } else {
+        // حفظ المنتجات الافتراضية
+        saveProductsToStorage();
+    }
+}
+
+// حفظ المنتجات في localStorage
+function saveProductsToStorage() {
+    localStorage.setItem('products', JSON.stringify(products));
+}
+
+// حفظ بيانات البيع
+function saveSaleData(saleData) {
+    const sales = JSON.parse(localStorage.getItem('salesData')) || [];
+    sales.push(saleData);
+    localStorage.setItem('salesData', JSON.stringify(sales));
+}
+
+// تحديث المخزون بعد البيع
+function updateInventory() {
+    cart.forEach(cartItem => {
+        const product = products.find(p => p.id === cartItem.id);
+        if (product) {
+            product.stock -= cartItem.quantity;
+            // التأكد من عدم وصول المخزون لأقل من صفر
+            if (product.stock < 0) {
+                product.stock = 0;
+            }
+        }
+    });
+
+    // حفظ المنتجات المحدثة
+    saveProductsToStorage();
+
+    // إعادة تحميل المنتجات لعرض المخزون المحدث
+    loadProducts();
+}
+
 // إنشاء الفاتورة
 function generateReceipt() {
     const receiptContent = document.getElementById('receiptContent');
@@ -478,6 +608,26 @@ function generateReceipt() {
     const tax = parseFloat(document.getElementById('tax').textContent.replace(' ج.م', ''));
     const discount = parseFloat(document.getElementById('discount').textContent.replace('-', '').replace(' ج.م', ''));
     const total = parseFloat(document.getElementById('grandTotal').textContent.replace(' ج.م', ''));
+
+    // حفظ بيانات البيع
+    const saleData = {
+        invoiceNumber: receiptNumber,
+        date: now.toISOString(),
+        cashier: currentUser.name,
+        items: cart.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity
+        })),
+        subtotal: subtotal,
+        tax: tax,
+        discount: discount,
+        total: total,
+        paymentMethod: selectedPaymentMethod
+    };
+
+    saveSaleData(saleData);
 
     let itemsHTML = '';
     cart.forEach(item => {
@@ -584,7 +734,8 @@ async function logout() {
                     Swal.showLoading();
                 }
             }).then(() => {
-                window.location.reload();
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
             });
         }
     } else {
@@ -609,7 +760,8 @@ async function logout() {
                     Swal.showLoading();
                 }
             }).then(() => {
-                window.location.reload();
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
             });
         }
     }

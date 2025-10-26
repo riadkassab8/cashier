@@ -105,7 +105,7 @@ body {
 
 .receipt-modal {
     position: relative;
-    bottom: 25px;
+    bottom: 30px;
 }
 
 /* Products Panel */
@@ -219,6 +219,16 @@ body {
     font-size: 0.8rem;
     color: var(--text-light);
     margin-top: 0.25rem;
+}
+
+.product-card .stock.stock-low {
+    color: var(--warning-color);
+    font-weight: 600;
+}
+
+.product-card .stock.stock-out {
+    color: var(--danger-color);
+    font-weight: 700;
 }
 
 /* Checkout Panel */

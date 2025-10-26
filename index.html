@@ -19,7 +19,11 @@
                 <h1>نظام كاشير المقهى</h1>
             </div>
             <div class="user-info">
-                <span class="cashier-name">الكاشير: <strong id="cashierName">أحمد محمد</strong></span>
+                <span class="cashier-name"><strong id="cashierName">أحمد محمد</strong></span>
+                <a href="dashboard.html" class="btn-dashboard"
+                    style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; transition: all 0.3s;">
+                    <i class="fas fa-chart-line"></i> لوحة التحكم
+                </a>
                 <span class="date-time" id="dateTime"></span>
                 <button class="btn-logout" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i> تسجيل خروج
@@ -81,7 +85,7 @@
                 </div>
 
                 <div class="actions-section">
-                    <button class="btn btn-secondary" onclick="applyDiscount()">
+                    <button class="btn btn-secondary" id="discountBtn" onclick="applyDiscount()">
                         <i class="fas fa-percent"></i> خصم
                     </button>
                     <button class="btn btn-danger" onclick="clearCart()">
@@ -156,6 +160,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="auth.js"></script>
     <script src="script.js"></script>
 </body>
 

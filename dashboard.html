@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - نظام كاشير المقهى</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        .dashboard-nav {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            padding: 0.75rem 1.5rem;
+            background: #fdf6e3;
+            border: 2px solid #d7ccc8;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: #3e2723;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background: #8b4513;
+            color: white;
+            border-color: #8b4513;
+        }
+
+        .nav-link.active {
+            background: #8b4513;
+            color: white;
+            border-color: #8b4513;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-right: 4px solid #8b4513;
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card.sales i {
+            color: #10b981;
+        }
+
+        .stat-card.invoices i {
+            color: #3b82f6;
+        }
+
+        .stat-card.products i {
+            color: #f59e0b;
+        }
+
+        .stat-card.users i {
+            color: #8b5cf6;
+        }
+
+        .stat-card h3 {
+            color: #795548;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #3e2723;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .chart-container h2 {
+            color: #3e2723;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background: #8b4513;
+            color: white;
+            padding: 1rem;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 1rem;
+            border-bottom: 1px solid #d7ccc8;
+        }
+
+        table tr:hover {
+            background: #fdf6e3;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge.danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .low-stock-alert {
+            background: #fef3c7;
+            border-right: 4px solid #f59e0b;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .low-stock-alert h4 {
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-label {
+            min-width: 150px;
+            font-weight: 600;
+            color: #3e2723;
+        }
+
+        .chart-bar-fill {
+            flex: 1;
+            height: 30px;
+            background: #8b4513;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            padding: 0 0.5rem;
+            color: white;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <h1>لوحة التحكم</h1>
+            </div>
+            <div class="user-info">
+                <span class="cashier-name"><span id="userName"></span></span>
+                <span class="date-time" id="dateTime"></span>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل خروج
+                </button>
+            </div>
+        </header>
+
+        <div class="dashboard-nav">
+            <div class="nav-links">
+                <a href="dashboard.html" class="nav-link active">
+                    <i class="fas fa-chart-line"></i> لوحة التحكم
+                </a>
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-cash-register"></i> نقطة البيع
+                </a>
+                <a href="#" class="nav-link" onclick="showReports()">
+                    <i class="fas fa-file-invoice"></i> التقارير
+                </a>
+                <a href="#" class="nav-link" onclick="showInventory()">
+                    <i class="fas fa-boxes"></i> المخزون
+                </a>
+                <a href="settings.html" class="nav-link" id="settingsLink" style="display: none;">
+                    <i class="fas fa-cog"></i> الإعدادات
+                </a>
+            </div>
+        </div>
+
+        <div style="padding: 1.5rem;">
+            <!-- إحصائيات سريعة -->
+            <div class="stats-grid">
+                <div class="stat-card sales">
+                    <i class="fas fa-dollar-sign"></i>
+                    <h3>إجمالي المبيعات اليوم</h3>
+                    <div class="value" id="todaySales">0.00 ج.م</div>
+                </div>
+                <div class="stat-card invoices">
+                    <i class="fas fa-receipt"></i>
+                    <h3>عدد الفواتير اليوم</h3>
+                    <div class="value" id="todayInvoices">0</div>
+                </div>
+                <div class="stat-card products">
+                    <i class="fas fa-box"></i>
+                    <h3>المنتجات المباعة</h3>
+                    <div class="value" id="productsSold">0</div>
+                </div>
+                <div class="stat-card users">
+                    <i class="fas fa-users"></i>
+                    <h3>الكاشيرات النشطة</h3>
+                    <div class="value" id="activeUsers">1</div>
+                </div>
+            </div>
+
+            <!-- تنبيهات المخزون -->
+            <div id="lowStockAlerts"></div>
+
+            <!-- المنتجات الأكثر مبيعاً -->
+            <div class="chart-container">
+                <h2><i class="fas fa-fire"></i> المنتجات الأكثر مبيعاً</h2>
+                <div id="topProducts"></div>
+            </div>
+
+            <!-- آخر الفواتير -->
+            <div class="table-container">
+                <h2><i class="fas fa-file-invoice"></i> آخر الفواتير</h2>
+                <table id="recentInvoices">
+                    <thead>
+                        <tr>
+                            <th>رقم الفاتورة</th>
+                            <th>التاريخ</th>
+                            <th>الكاشير</th>
+                            <th>المبلغ</th>
+                            <th>طريقة الدفع</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoicesBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+
+</html>
