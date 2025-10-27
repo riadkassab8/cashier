@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحديث المنتجات</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #8b4513 0%, #d2691e 100%);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+        }
+
+        h1 {
+            color: #8b4513;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        button {
+            background: #8b4513;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #a0522d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .success {
+            color: #10b981;
+            font-weight: bold;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="icon">☕</div>
+        <h1>تحديث صور المنتجات</h1>
+        <p>
+            اضغط على الزر أدناه لتحديث جميع المنتجات بالصور الجديدة.<br>
+            سيتم مسح المنتجات القديمة وإعادة تحميل الصفحة.
+        </p>
+        <button onclick="updateProducts()">تحديث المنتجات الآن</button>
+        <p class="success" id="successMsg">✓ تم التحديث بنجاح! جاري إعادة التوجيه...</p>
+    </div>
+
+    <script>
+        function updateProducts() {
+            // مسح إصدار المنتجات لإجبار التحديث
+            localStorage.removeItem('productsVersion');
+            localStorage.removeItem('products');
+
+            // إظهار رسالة النجاح
+            document.getElementById('successMsg').style.display = 'block';
+
+            // إعادة التوجيه إلى صفحة POS بعد ثانية
+            setTimeout(() => {
+                window.location.href = 'pos.html';
+            }, 1500);
+        }
+
+        // عرض معلومات الإصدار الحالي
+        window.onload = function () {
+            const version = localStorage.getItem('productsVersion');
+            if (version) {
+                const p = document.querySelector('p');
+                p.innerHTML += `<br><br><small style="color: #666;">الإصدار الحالي: ${version}</small>`;
+            }
+        };
+    </script>
+</body>
+
+</html>

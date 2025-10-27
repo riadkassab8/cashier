@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>لوحة التحكم - نظام كاشير المقهى</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -303,8 +306,12 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="auth.js"></script>
-    <script src="dashboard.js"></script>
+    <script>
+        const timestamp = new Date().getTime();
+        document.write('<script src="auth.js?v=' + timestamp + '"><\/script>');
+        document.write('<script src="dashboard.js?v=' + timestamp + '"><\/script>');
+    </script>
+
 </body>
 
 </html>

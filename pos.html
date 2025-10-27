@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>نظام كاشير المقهى - نقطة البيع</title>
     <link rel="stylesheet" href="pos-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -254,9 +257,40 @@
     <!-- Mobile Cart Overlay -->
     <div class="cart-overlay" id="cartOverlay" onclick="toggleMobileCart()"></div>
 
+    <!-- Product Options Modal -->
+    <div id="productOptionsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-sliders-h"></i> <span id="productOptionsTitle">خيارات المنتج</span></h2>
+                <span class="close" onclick="closeProductOptions()">&times;</span>
+            </div>
+            <div class="product-options-body">
+                <div class="options-list" id="optionsList">
+                    <!-- Options will be loaded here -->
+                </div>
+                <div class="options-note">
+                    <label for="productNote">ملاحظات إضافية:</label>
+                    <textarea id="productNote" rows="2" placeholder="أي ملاحظات خاصة..."></textarea>
+                </div>
+                <div class="options-actions">
+                    <button class="btn btn-secondary" onclick="closeProductOptions()">
+                        <i class="fas fa-times"></i> إلغاء
+                    </button>
+                    <button class="btn btn-primary" onclick="confirmProductOptions()">
+                        <i class="fas fa-check"></i> إضافة للطلب
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="auth.js"></script>
-    <script src="pos.js"></script>
+    <script>
+        // Force reload scripts without cache
+        const timestamp = new Date().getTime();
+        document.write('<script src="auth.js?v=' + timestamp + '"><\/script>');
+        document.write('<script src="pos.js?v=' + timestamp + '"><\/script>');
+    </script>
     <script>
         // Mobile Cart Toggle
         function toggleMobileCart() {
@@ -305,3 +339,8 @@
         });
     });
 </script>
+
+
+</body>
+
+</html>

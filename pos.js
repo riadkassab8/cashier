@@ -17,75 +17,99 @@ if (currentUser.role === 'cashier') {
     document.getElementById('discountBtn').style.display = 'none';
 }
 
-// تحميل المنتجات من localStorage أو استخدام القيم الافتراضية
-let products = JSON.parse(localStorage.getItem('products'));
+// نظام إدارة المنتجات مع Version Control
+const PRODUCTS_VERSION = '2.2'; // غير هذا الرقم عند تحديث المنتجات
 
-// إذا لم تكن موجودة، استخدم المنتجات الافتراضية
-if (!products || products.length === 0) {
-    products = [
+function getDefaultProducts() {
+    return [
         // مشروبات ساخنة
-        { id: 1, name: 'إسبريسو', price: 9.00, category: 'hot-drinks', icon: 'fa-mug-hot', stock: 100 },
-        { id: 2, name: 'أمريكانو', price: 11.00, category: 'hot-drinks', icon: 'fa-mug-hot', stock: 100 },
-        { id: 3, name: 'كابتشينو', price: 14.00, category: 'hot-drinks', icon: 'fa-mug-saucer', stock: 100 },
-        { id: 4, name: 'لاتيه', price: 16.00, category: 'hot-drinks', icon: 'fa-mug-saucer', stock: 100 },
-        { id: 5, name: 'موكا', price: 17.00, category: 'hot-drinks', icon: 'fa-mug-hot', stock: 100 },
-        { id: 6, name: 'فلات وايت', price: 15.00, category: 'hot-drinks', icon: 'fa-mug-saucer', stock: 100 },
-        { id: 7, name: 'ماكياتو', price: 13.00, category: 'hot-drinks', icon: 'fa-mug-hot', stock: 100 },
-        { id: 8, name: 'شوكولاتة ساخنة', price: 12.00, category: 'hot-drinks', icon: 'fa-mug-hot', stock: 80 },
-        { id: 9, name: 'شاي', price: 8.00, category: 'hot-drinks', icon: 'fa-mug-hot', stock: 100 },
-        { id: 10, name: 'شاي لاتيه', price: 15.00, category: 'hot-drinks', icon: 'fa-mug-saucer', stock: 80 },
+        { id: 1, name: 'إسبريسو', price: 9.00, category: 'hot-drinks', image: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=200&h=200&fit=crop', stock: 100 },
+        { id: 2, name: 'أمريكانو', price: 11.00, category: 'hot-drinks', image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&h=200&fit=crop', stock: 100 },
+        { id: 3, name: 'كابتشينو', price: 14.00, category: 'hot-drinks', image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop', stock: 100 },
+        { id: 4, name: 'لاتيه', price: 16.00, category: 'hot-drinks', image: 'https://images.unsplash.com/photo-1561882468-9110e03e0f78?w=200&h=200&fit=crop', stock: 100 },
+        { id: 5, name: 'موكا', price: 17.00, category: 'hot-drinks', image: 'https://images.unsplash.com/photo-1607260550778-aa9d29444ce1?w=200&h=200&fit=crop', stock: 100 },
+        { id: 6, name: 'فلات وايت', price: 15.00, category: 'hot-drinks', image: 'https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?w=200&h=200&fit=crop', stock: 100 },
+        { id: 7, name: 'ماكياتو', price: 13.00, category: 'hot-drinks', image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=200&h=200&fit=crop', stock: 100 },
+        { id: 8, name: 'شوكولاتة ساخنة', price: 12.00, category: 'hot-drinks', image: 'https://images.unsplash.com/photo-1542990253-a781e04c0082?w=200&h=200&fit=crop', stock: 80 },
+        { id: 9, name: 'شاي', price: 8.00, category: 'hot-drinks', image: 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=200&h=200&fit=crop', stock: 100 },
+        { id: 10, name: 'شاي لاتيه', price: 15.00, category: 'hot-drinks', image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=200&h=200&fit=crop', stock: 80 },
 
         // مشروبات باردة
-        { id: 11, name: 'قهوة مثلجة', price: 13.00, category: 'cold-drinks', icon: 'fa-glass-water', stock: 100 },
-        { id: 12, name: 'لاتيه مثلج', price: 17.00, category: 'cold-drinks', icon: 'fa-glass-water', stock: 100 },
-        { id: 13, name: 'موكا مثلج', price: 18.00, category: 'cold-drinks', icon: 'fa-glass-water', stock: 100 },
-        { id: 14, name: 'أمريكانو مثلج', price: 12.00, category: 'cold-drinks', icon: 'fa-glass-water', stock: 100 },
-        { id: 15, name: 'كولد برو', price: 15.00, category: 'cold-drinks', icon: 'fa-glass-water', stock: 80 },
-        { id: 16, name: 'فرابتشينو', price: 20.00, category: 'cold-drinks', icon: 'fa-blender', stock: 80 },
-        { id: 17, name: 'سموذي', price: 21.00, category: 'cold-drinks', icon: 'fa-blender', stock: 60 },
-        { id: 18, name: 'عصير طازج', price: 16.00, category: 'cold-drinks', icon: 'fa-glass-water', stock: 50 },
-        { id: 19, name: 'شاي مثلج', price: 10.00, category: 'cold-drinks', icon: 'fa-glass-water', stock: 80 },
-        { id: 20, name: 'ليموناضة', price: 11.00, category: 'cold-drinks', icon: 'fa-lemon', stock: 70 },
+        { id: 11, name: 'قهوة مثلجة', price: 13.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=200&h=200&fit=crop', stock: 100 },
+        { id: 12, name: 'لاتيه مثلج', price: 17.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=200&h=200&fit=crop', stock: 100 },
+        { id: 13, name: 'موكا مثلج', price: 18.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1578374173705-0a5c2c1e8b72?w=200&h=200&fit=crop', stock: 100 },
+        { id: 14, name: 'أمريكانو مثلج', price: 12.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=200&h=200&fit=crop', stock: 100 },
+        { id: 15, name: 'كولد برو', price: 15.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=200&h=200&fit=crop', stock: 80 },
+        { id: 16, name: 'فرابتشينو', price: 20.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=200&h=200&fit=crop', stock: 80 },
+        { id: 17, name: 'سموذي', price: 21.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1505252585461-04db1eb84625?w=200&h=200&fit=crop', stock: 60 },
+        { id: 18, name: 'عصير طازج', price: 16.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=200&h=200&fit=crop', stock: 50 },
+        { id: 19, name: 'شاي مثلج', price: 10.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=200&h=200&fit=crop', stock: 80 },
+        { id: 20, name: 'ليموناضة', price: 11.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1523677011781-c91d1bbe2f9d?w=200&h=200&fit=crop', stock: 70 },
 
         // معجنات
-        { id: 21, name: 'كرواسون', price: 12.00, category: 'pastries', icon: 'fa-bread-slice', stock: 40 },
-        { id: 22, name: 'كرواسون ', price: 14.00, category: 'pastries', icon: 'fa-bread-slice', stock: 35 },
-        { id: 23, name: 'مافن بالتوت', price: 11.00, category: 'pastries', icon: 'fa-cake-candles', stock: 30 },
-        { id: 24, name: 'مافن بالشوكولاتة', price: 11.00, category: 'pastries', icon: 'fa-cake-candles', stock: 30 },
-        { id: 25, name: 'سينابون', price: 15.00, category: 'pastries', icon: 'fa-cookie', stock: 25 },
-        { id: 26, name: 'دونات', price: 9.00, category: 'pastries', icon: 'fa-cookie', stock: 40 },
-        { id: 27, name: 'بيجل', price: 8.00, category: 'pastries', icon: 'fa-bread-slice', stock: 35 },
-        { id: 28, name: 'سكون', price: 10.00, category: 'pastries', icon: 'fa-cookie', stock: 30 },
-        { id: 29, name: 'معجنات دنماركية', price: 13.00, category: 'pastries', icon: 'fa-cookie', stock: 25 },
-        { id: 30, name: 'براوني', price: 12.00, category: 'pastries', icon: 'fa-cookie', stock: 30 },
+        { id: 21, name: 'كرواسون', price: 12.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=200&h=200&fit=crop', stock: 40 },
+        { id: 22, name: 'كرواسون شوكولاتة', price: 14.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1623334044303-241021148842?w=200&h=200&fit=crop', stock: 35 },
+        { id: 23, name: 'مافن بالتوت', price: 11.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=200&h=200&fit=crop', stock: 30 },
+        { id: 24, name: 'مافن بالشوكولاتة', price: 11.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1607920591413-4ec007e70023?w=200&h=200&fit=crop', stock: 30 },
+        { id: 25, name: 'سينابون', price: 15.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200&h=200&fit=crop', stock: 25 },
+        { id: 26, name: 'دونات', price: 9.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&h=200&fit=crop', stock: 40 },
+        { id: 27, name: 'بيجل', price: 8.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=200&h=200&fit=crop', stock: 35 },
+        { id: 28, name: 'سكون', price: 10.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1612182062631-e5c8c1a7e1f7?w=200&h=200&fit=crop', stock: 30 },
+        { id: 29, name: 'معجنات دنماركية', price: 13.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1509365465985-25d11c17e812?w=200&h=200&fit=crop', stock: 25 },
+        { id: 30, name: 'براوني', price: 12.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=200&h=200&fit=crop', stock: 30 },
 
         // وجبات خفيفة
-        { id: 31, name: 'ساندويتش', price: 23.00, category: 'snacks', icon: 'fa-burger', stock: 25 },
-        { id: 32, name: 'بانيني', price: 25.00, category: 'snacks', icon: 'fa-burger', stock: 20 },
-        { id: 33, name: 'سلطة', price: 27.00, category: 'snacks', icon: 'fa-bowl-food', stock: 20 },
-        { id: 34, name: 'زبادي بالفواكه', price: 17.00, category: 'snacks', icon: 'fa-ice-cream', stock: 25 },
-        { id: 35, name: 'كوب فواكه', price: 14.00, category: 'snacks', icon: 'fa-apple-whole', stock: 30 },
-        { id: 36, name: 'شيبس', price: 7.00, category: 'snacks', icon: 'fa-cookie', stock: 50 },
-        { id: 37, name: 'جرانولا بار', price: 9.00, category: 'snacks', icon: 'fa-cookie', stock: 40 },
-        { id: 38, name: 'كوكيز', price: 8.00, category: 'snacks', icon: 'fa-cookie', stock: 45 },
-        { id: 39, name: 'بسكوتي', price: 10.00, category: 'snacks', icon: 'fa-cookie', stock: 35 },
-        { id: 40, name: 'بروتين بار', price: 12.00, category: 'snacks', icon: 'fa-cookie', stock: 30 },
+        { id: 31, name: 'ساندويتش', price: 23.00, category: 'snacks', image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=200&h=200&fit=crop', stock: 25 },
+        { id: 32, name: 'بانيني', price: 25.00, category: 'snacks', image: 'https://images.unsplash.com/photo-1509722747041-616f39b57569?w=200&h=200&fit=crop', stock: 20 },
+        { id: 33, name: 'سلطة', price: 27.00, category: 'snacks', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&h=200&fit=crop', stock: 20 },
+        { id: 34, name: 'زبادي بالفواكه', price: 17.00, category: 'snacks', image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=200&h=200&fit=crop', stock: 25 },
+        { id: 35, name: 'كوب فواكه', price: 14.00, category: 'snacks', image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop', stock: 30 },
+        { id: 36, name: 'شيبس', price: 7.00, category: 'snacks', image: 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=200&h=200&fit=crop', stock: 50 },
+        { id: 37, name: 'جرانولا بار', price: 9.00, category: 'snacks', image: 'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=200&h=200&fit=crop', stock: 40 },
+        { id: 38, name: 'كوكيز', price: 8.00, category: 'snacks', image: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=200&h=200&fit=crop', stock: 45 },
+        { id: 39, name: 'بسكوتي', price: 10.00, category: 'snacks', image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=200&h=200&fit=crop', stock: 35 },
+        { id: 40, name: 'بروتين بار', price: 12.00, category: 'snacks', image: 'https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?w=200&h=200&fit=crop', stock: 30 },
 
         // شيشة
-        { id: 41, name: 'لاي طبي', price: 50.00, category: 'shisha', icon: 'fa-wind', stock: 30 },
-        { id: 42, name: 'معسل', price: 45.00, category: 'shisha', icon: 'fa-wind', stock: 30 },
-        { id: 43, name: 'معسل دبل', price: 55.00, category: 'shisha', icon: 'fa-wind', stock: 25 },
-        { id: 44, name: 'زغلول', price: 40.00, category: 'shisha', icon: 'fa-wind', stock: 30 },
-        { id: 45, name: 'اسيلز ليمون', price: 48.00, category: 'shisha', icon: 'fa-wind', stock: 25 },
-        { id: 46, name: 'منت نعناع', price: 45.00, category: 'shisha', icon: 'fa-wind', stock: 30 },
-        { id: 47, name: 'ثلج شيشه', price: 50.00, category: 'shisha', icon: 'fa-wind', stock: 20 },
-        { id: 48, name: 'لاي فاخر', price: 60.00, category: 'shisha', icon: 'fa-wind', stock: 20 },
-        { id: 49, name: 'فاخر مزايا', price: 65.00, category: 'shisha', icon: 'fa-wind', stock: 15 },
-        { id: 50, name: 'فواكه خاص', price: 55.00, category: 'shisha', icon: 'fa-wind', stock: 20 }
+        { id: 41, name: 'لاي طبي', price: 50.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 30 },
+        { id: 42, name: 'معسل', price: 45.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 30 },
+        { id: 43, name: 'معسل دبل', price: 55.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 25 },
+        { id: 44, name: 'زغلول', price: 40.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 30 },
+        { id: 45, name: 'اسيلز ليمون', price: 48.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 25 },
+        { id: 46, name: 'منت نعناع', price: 45.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 30 },
+        { id: 47, name: 'ثلج شيشه', price: 50.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 20 },
+        { id: 48, name: 'لاي فاخر', price: 60.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 20 },
+        { id: 49, name: 'فاخر مزايا', price: 65.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 15 },
+        { id: 50, name: 'فواكه خاص', price: 55.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 20 }
     ];
+}
 
-    // حفظ المنتجات في localStorage
+// تحميل المنتجات مع التحقق من الإصدار
+let products;
+const savedVersion = localStorage.getItem('productsVersion');
+const savedProducts = JSON.parse(localStorage.getItem('products'));
+
+if (savedVersion !== PRODUCTS_VERSION || !savedProducts || savedProducts.length === 0) {
+    // تحديث المنتجات إذا كان الإصدار مختلف أو لا توجد منتجات
+    console.log('تحديث المنتجات إلى الإصدار:', PRODUCTS_VERSION);
+    products = getDefaultProducts();
+
+    // الحفاظ على المخزون من المنتجات القديمة إذا كانت موجودة
+    if (savedProducts && savedProducts.length > 0) {
+        products = products.map(newProduct => {
+            const oldProduct = savedProducts.find(p => p.id === newProduct.id);
+            if (oldProduct) {
+                return { ...newProduct, stock: oldProduct.stock };
+            }
+            return newProduct;
+        });
+    }
+
     localStorage.setItem('products', JSON.stringify(products));
+    localStorage.setItem('productsVersion', PRODUCTS_VERSION);
+} else {
+    // استخدام المنتجات المحفوظة
+    products = savedProducts;
 }
 
 // الطاولات
@@ -171,18 +195,20 @@ function loadProducts() {
     console.log('Shisha products:', products.filter(p => p.category === 'shisha'));
 
     grid.innerHTML = filtered.map(product => {
-        const stockClass = product.stock === 0 ? 'out' : product.stock <= 10 ? 'low' : '';
-        const stockText = product.stock === 0 ? 'نفذ' : `المخزون: ${product.stock}`;
+        // استخدام الصورة إذا كانت موجودة، وإلا استخدام الأيقونة
+        const imageHtml = product.image
+            ? `<img src="${product.image}" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+               <i class="fas ${product.icon || 'fa-mug-hot'}" style="display: none;"></i>`
+            : `<i class="fas ${product.icon || 'fa-mug-hot'}"></i>`;
 
         return `
             <div class="product-card ${product.stock === 0 ? 'out-of-stock' : ''}" 
                  onclick="addToCart(${product.id})">
                 <div class="product-image">
-                    <i class="fas ${product.icon}"></i>
+                    ${imageHtml}
                 </div>
                 <div class="product-name">${product.name}</div>
                 <div class="product-price">${product.price.toFixed(2)} ج.م</div>
-                <div class="product-stock ${stockClass}">${stockText}</div>
             </div>
         `;
     }).join('');
@@ -209,25 +235,204 @@ function searchProducts() {
     );
 
     grid.innerHTML = filtered.map(product => {
-        const stockClass = product.stock === 0 ? 'out' : product.stock <= 10 ? 'low' : '';
-        const stockText = product.stock === 0 ? 'نفذ' : `المخزون: ${product.stock}`;
+        // استخدام الصورة إذا كانت موجودة، وإلا استخدام الأيقونة
+        const imageHtml = product.image
+            ? `<img src="${product.image}" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+               <i class="fas ${product.icon || 'fa-mug-hot'}" style="display: none;"></i>`
+            : `<i class="fas ${product.icon || 'fa-mug-hot'}"></i>`;
 
         return `
             <div class="product-card ${product.stock === 0 ? 'out-of-stock' : ''}" 
                  onclick="addToCart(${product.id})">
                 <div class="product-image">
-                    <i class="fas ${product.icon}"></i>
+                    ${imageHtml}
                 </div>
                 <div class="product-name">${product.name}</div>
                 <div class="product-price">${product.price.toFixed(2)} ج.م</div>
-                <div class="product-stock ${stockClass}">${stockText}</div>
             </div>
         `;
     }).join('');
 }
 
+// Product Options System
+let selectedProductForOptions = null;
+
+const productOptions = {
+    'شاي': {
+        sugar: {
+            title: 'السكر',
+            type: 'radio',
+            required: true,
+            options: ['زيادة', 'وسط', 'خفيف', 'ساده', 'سكر برا']
+        }
+    },
+    'قهوة': {
+        sugar: {
+            title: 'السكر',
+            type: 'radio',
+            required: true,
+            options: ['زيادة', 'وسط', 'خفيف', 'ساده', 'سكر برا']
+        }
+    },
+    'كابتشينو': {
+        sugar: {
+            title: 'السكر',
+            type: 'radio',
+            required: true,
+            options: ['زيادة', 'وسط', 'خفيف', 'ساده', 'سكر برا']
+        }
+    },
+    'لاتيه': {
+        sugar: {
+            title: 'السكر',
+            type: 'radio',
+            required: true,
+            options: ['زيادة', 'وسط', 'خفيف', 'ساده', 'سكر برا']
+        }
+    }
+};
+
+function getProductOptions(productName) {
+    for (let key in productOptions) {
+        if (productName.includes(key)) {
+            return productOptions[key];
+        }
+    }
+    return null;
+}
+
+function showProductOptions(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    const options = getProductOptions(product.name);
+
+    if (!options) {
+        addToCartDirect(productId);
+        return;
+    }
+
+    selectedProductForOptions = {
+        product: product,
+        selectedOptions: {},
+        note: ''
+    };
+
+    document.getElementById('productOptionsTitle').textContent = `خيارات ${product.name}`;
+
+    const optionsList = document.getElementById('optionsList');
+    let html = '';
+
+    for (let optionKey in options) {
+        const option = options[optionKey];
+        html += `<div class="option-group"><h4><i class="fas fa-dot-circle"></i> ${option.title} ${option.required ? '<span style="color: #ef4444;">*</span>' : ''}</h4>`;
+
+        option.options.forEach((opt, index) => {
+            const inputId = `${optionKey}_${index}`;
+            html += `
+                <div class="option-item" onclick="selectOption('${optionKey}', '${opt}', '${option.type}', this)">
+                    <input type="${option.type}" id="${inputId}" name="${optionKey}" value="${opt}">
+                    <label for="${inputId}">${opt}</label>
+                </div>
+            `;
+        });
+
+        html += '</div>';
+    }
+
+    optionsList.innerHTML = html;
+    document.getElementById('productNote').value = '';
+    const modal = document.getElementById('productOptionsModal');
+    modal.style.display = 'block';
+    modal.style.visibility = 'visible';
+}
+
+function selectOption(optionKey, value, type, element) {
+    if (type === 'radio') {
+        element.parentElement.querySelectorAll('.option-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        element.classList.add('selected');
+        element.querySelector('input').checked = true;
+    }
+
+    if (!selectedProductForOptions) return;
+    selectedProductForOptions.selectedOptions[optionKey] = value;
+}
+
+function closeProductOptions() {
+    const modal = document.getElementById('productOptionsModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.style.visibility = 'hidden';
+    }
+    selectedProductForOptions = null;
+}
+
+function confirmProductOptions() {
+    if (!selectedProductForOptions) return;
+
+    const product = selectedProductForOptions.product;
+    const options = getProductOptions(product.name);
+
+    for (let optionKey in options) {
+        if (options[optionKey].required && !selectedProductForOptions.selectedOptions[optionKey]) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'تنبيه',
+                text: `يرجى اختيار ${options[optionKey].title}`,
+                confirmButtonColor: '#8b4513'
+            });
+            return;
+        }
+    }
+
+    selectedProductForOptions.note = document.getElementById('productNote').value;
+
+    let optionsText = '';
+    for (let key in selectedProductForOptions.selectedOptions) {
+        optionsText += selectedProductForOptions.selectedOptions[key] + ' ';
+    }
+    if (selectedProductForOptions.note) {
+        optionsText += `(${selectedProductForOptions.note})`;
+    }
+
+    const existingItem = currentOrder.items.find(item =>
+        item.id === product.id && item.options === optionsText.trim()
+    );
+
+    if (existingItem) {
+        existingItem.quantity++;
+    } else {
+        currentOrder.items.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            quantity: 1,
+            options: optionsText.trim()
+        });
+    }
+
+    updateCart();
+    saveCurrentOrder();
+
+    // Close modal immediately
+    const modal = document.getElementById('productOptionsModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.style.visibility = 'hidden';
+    }
+    selectedProductForOptions = null;
+
+    console.log('Product added and modal closed');
+}
+
 // إضافة إلى السلة
 function addToCart(productId) {
+    showProductOptions(productId);
+}
+
+function addToCartDirect(productId) {
     const product = products.find(p => p.id === productId);
     if (!product || product.stock === 0) {
         Swal.fire({
@@ -239,7 +444,7 @@ function addToCart(productId) {
         return;
     }
 
-    const existingItem = currentOrder.items.find(item => item.id === productId);
+    const existingItem = currentOrder.items.find(item => item.id === productId && !item.options);
 
     if (existingItem) {
         if (existingItem.quantity < product.stock) {
@@ -263,6 +468,7 @@ function addToCart(productId) {
     }
 
     updateCart();
+    saveCurrentOrder();
 }
 
 // تحديث السلة
@@ -277,18 +483,19 @@ function updateCart() {
             </div>
         `;
     } else {
-        cartItems.innerHTML = currentOrder.items.map(item => `
+        cartItems.innerHTML = currentOrder.items.map((item, index) => `
             <div class="cart-item">
                 <div class="cart-item-info">
                     <h4>${item.name}</h4>
+                    ${item.options ? `<p style="font-size: 0.8rem; color: #8b4513; margin: 0.25rem 0;">${item.options}</p>` : ''}
                     <p>${item.price.toFixed(2)} ج.م</p>
                 </div>
                 <div class="cart-item-controls">
-                    <button class="qty-btn" onclick="decreaseQty(${item.id})">-</button>
+                    <button class="qty-btn" onclick="decreaseQtyByIndex(${index})">-</button>
                     <span class="qty-display">${item.quantity}</span>
-                    <button class="qty-btn" onclick="increaseQty(${item.id})">+</button>
+                    <button class="qty-btn" onclick="increaseQtyByIndex(${index})">+</button>
                     <span class="item-total">${(item.price * item.quantity).toFixed(2)}</span>
-                    <button class="remove-btn" onclick="removeItem(${item.id})">
+                    <button class="remove-btn" onclick="removeItemByIndex(${index})">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -299,7 +506,42 @@ function updateCart() {
     calculateTotals();
 }
 
-// زيادة الكمية
+// زيادة الكمية بالـ index
+function increaseQtyByIndex(index) {
+    const item = currentOrder.items[index];
+    const product = products.find(p => p.id === item.id);
+
+    if (item && item.quantity < product.stock) {
+        item.quantity++;
+        updateCart();
+        saveCurrentOrder();
+    }
+}
+
+// تقليل الكمية بالـ index
+function decreaseQtyByIndex(index) {
+    const item = currentOrder.items[index];
+
+    if (item) {
+        if (item.quantity > 1) {
+            item.quantity--;
+        } else {
+            removeItemByIndex(index);
+            return;
+        }
+        updateCart();
+        saveCurrentOrder();
+    }
+}
+
+// حذف منتج بالـ index
+function removeItemByIndex(index) {
+    currentOrder.items.splice(index, 1);
+    updateCart();
+    saveCurrentOrder();
+}
+
+// زيادة الكمية (old function for compatibility)
 function increaseQty(productId) {
     const item = currentOrder.items.find(i => i.id === productId);
     const product = products.find(p => p.id === productId);
@@ -310,7 +552,7 @@ function increaseQty(productId) {
     }
 }
 
-// تقليل الكمية
+// تقليل الكمية (old function)
 function decreaseQty(productId) {
     const item = currentOrder.items.find(i => i.id === productId);
 
@@ -325,7 +567,7 @@ function decreaseQty(productId) {
     }
 }
 
-// حذف منتج
+// حذف منتج (old function)
 function removeItem(productId) {
     currentOrder.items = currentOrder.items.filter(i => i.id !== productId);
     updateCart();
@@ -1937,10 +2179,23 @@ function fixProductIcons() {
     }
 }
 
+// دالة مساعدة لإعادة تحميل المنتجات (يمكن استدعاؤها من الكونسول)
+window.reloadProducts = function () {
+    localStorage.removeItem('productsVersion');
+    location.reload();
+};
+
+// دالة لتحديث إصدار المنتجات يدوياً
+window.forceUpdateProducts = function () {
+    products = getDefaultProducts();
+    localStorage.setItem('products', JSON.stringify(products));
+    localStorage.setItem('productsVersion', PRODUCTS_VERSION);
+    loadProducts();
+    console.log('✓ تم تحديث المنتجات بنجاح!');
+};
+
 // التهيئة
 fixProductIcons();
-// إعادة تحميل المنتجات من localStorage بعد الإصلاح
-products = JSON.parse(localStorage.getItem('products')) || products;
 generateOrderNumber();
 loadProducts();
 loadOpenOrders();
