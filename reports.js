@@ -39,22 +39,29 @@ let filteredSales = [...allSales];
 
 // عرض البيانات في الكونسول للتشخيص
 console.log('📊 Total sales loaded:', allSales.length);
+console.log('📊 All sales:', allSales);
 console.log('📊 Sample sale:', allSales[0]);
+
+// عرض أسماء الكاشيرز
+const cashierNames = [...new Set(allSales.map(s => s.cashier))];
+console.log('👥 Cashiers in sales:', cashierNames);
+
 if (allSales.length > 0) {
     console.log('📊 Sale structure:', {
         hasDate: !!allSales[0].date,
         hasCompletedAt: !!allSales[0].completedAt,
         hasItems: !!allSales[0].items,
-        itemsCount: allSales[0].items?.length
+        itemsCount: allSales[0].items?.length,
+        cashier: allSales[0].cashier
     });
+
+    // عرض آخر 5 مبيعات
+    console.log('📊 Last 5 sales:', allSales.slice(-5));
 }
 
-// تهيئة التواريخ
-const today = new Date();
-document.getElementById('dateTo').valueAsDate = today;
-const weekAgo = new Date(today);
-weekAgo.setDate(weekAgo.getDate() - 7);
-document.getElementById('dateFrom').valueAsDate = weekAgo;
+// تهيئة التواريخ - نخليها فاضية عشان تعرض كل البيانات
+// document.getElementById('dateTo').valueAsDate = new Date();
+// document.getElementById('dateFrom').valueAsDate = new Date();
 
 // تحميل قائمة الكاشيرز
 function loadCashiersList() {
@@ -132,31 +139,56 @@ function applyFilters() {
     const payment = document.getElementById('paymentFilter').value;
 
     console.log('🔍 Applying filters:', { dateFrom, dateTo, cashier, payment });
+    console.log('🔍 Total sales before filter:', allSales.length);
 
     filteredSales = allSales.filter(sale => {
+        // فحص الكاشير
+        if (cashier !== 'all' && sale.cashier !== cashier) {
+            return false;
+        }
+
+        // فحص طريقة الدفع
+        if (payment !== 'all' && sale.paymentMethod !== payment) {
+            return false;
+        }
+
+        // فحص التاريخ فقط إذا كان محدد
+        if (!dateFrom && !dateTo) {
+            // لا يوجد فلتر تاريخ، اعرض كل شيء
+            return true;
+        }
+
         const saleDate = new Date(sale.completedAt || sale.date || sale.createdAt);
 
-        // تخطي المبيعات بتاريخ غير صحيح
+        // إذا كان التاريخ غير صحيح، اعرض البيع
         if (isNaN(saleDate.getTime())) {
-            console.warn('Invalid date for sale:', sale);
-            return false;
+            console.warn('⚠️ Invalid date for sale, including anyway:', sale);
+            return true;
         }
 
         const fromDate = dateFrom ? new Date(dateFrom) : null;
         const toDate = dateTo ? new Date(dateTo) : null;
 
-        if (fromDate && saleDate < fromDate) return false;
-        if (toDate) {
-            toDate.setHours(23, 59, 59);
-            if (saleDate > toDate) return false;
+        // فحص التاريخ
+        if (fromDate) {
+            fromDate.setHours(0, 0, 0, 0);
+            if (saleDate < fromDate) {
+                return false;
+            }
         }
-        if (cashier !== 'all' && sale.cashier !== cashier) return false;
-        if (payment !== 'all' && sale.paymentMethod !== payment) return false;
+
+        if (toDate) {
+            toDate.setHours(23, 59, 59, 999);
+            if (saleDate > toDate) {
+                return false;
+            }
+        }
 
         return true;
     });
 
     console.log('✅ Filtered sales:', filteredSales.length);
+    console.log('✅ Filtered sales data:', filteredSales);
 
     loadSalesTable();
     loadCashierPerformance();
@@ -1092,6 +1124,15 @@ function downloadPDF() {
         });
         console.error('PDF Error:', error);
     });
+}
+
+// مسح الفلاتر وعرض كل البيانات
+function clearFilters() {
+    document.getElementById('dateFrom').value = '';
+    document.getElementById('dateTo').value = '';
+    document.getElementById('cashierFilter').value = 'all';
+    document.getElementById('paymentFilter').value = 'all';
+    applyFilters();
 }
 
 // التهيئة

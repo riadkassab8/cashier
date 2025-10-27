@@ -911,6 +911,9 @@ body.pos-page {
     border-radius: 1rem;
     width: 90%;
     max-width: 600px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: slideDown 0.3s ease;
 }
@@ -1317,8 +1320,12 @@ body.pos-page {
     .modal-content {
         width: 95%;
         margin: 2% auto;
-        max-height: 90vh;
-        overflow-y: auto;
+        max-height: 95vh;
+        overflow: hidden;
+    }
+
+    .modal-header {
+        flex-shrink: 0;
     }
 
     .tables-grid {
@@ -1693,10 +1700,16 @@ body.pos-page {
 /* Product Options Modal */
 .product-options-body {
     padding: 1.5rem;
+    max-height: 70vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .options-list {
     margin-bottom: 1.5rem;
+    flex: 1;
+    overflow-y: auto;
 }
 
 .option-group {
@@ -1793,21 +1806,44 @@ body.pos-page {
 @media (max-width: 768px) {
     .product-options-body {
         padding: 1rem;
+        max-height: 65vh;
     }
 
     .option-group {
         padding: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .option-group h4 {
+        font-size: 0.95rem;
     }
 
     .option-item {
         padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .options-note {
+        margin-bottom: 1rem;
+    }
+
+    .options-note textarea {
+        padding: 0.6rem;
+        font-size: 0.9rem;
     }
 
     .options-actions {
         flex-direction: column;
+        position: sticky;
+        bottom: 0;
+        background: white;
+        padding-top: 1rem;
+        margin-top: 1rem;
+        border-top: 2px solid var(--border);
     }
 
     .options-actions .btn {
         width: 100%;
+        padding: 0.75rem;
     }
 }

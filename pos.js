@@ -344,10 +344,43 @@ const productOptions = {
             required: true,
             options: ['زيادة', 'وسط', 'خفيف', 'ساده', 'سكر برا']
         }
+    },
+    'شيشة': {
+        coal: {
+            title: 'نوع الفحم',
+            type: 'radio',
+            required: true,
+            options: ['فحم عادي', 'فحم كوكو', 'فحم سريع']
+        },
+        flavor: {
+            title: 'النكهة',
+            type: 'radio',
+            required: false,
+            options: ['عادي', 'سلوم', 'نعناع', 'ليمون', 'توت', 'تفاحتين', 'عنب', 'فواكه مشكلة']
+        },
+        extras: {
+            title: 'إضافات',
+            type: 'checkbox',
+            required: false,
+            options: ['ثلج', 'ليمون', 'نعناع طازج']
+        }
     }
 };
 
-function getProductOptions(productName) {
+function getProductOptions(productName, productCategory, productId) {
+    // Products without options (by ID)
+    const productsWithoutOptions = [47, 48]; // ثلج شيشه، لاي فاخر
+
+    if (productsWithoutOptions.includes(productId)) {
+        return null;
+    }
+
+    // Check by category first (for shisha)
+    if (productCategory === 'shisha' && productOptions['شيشة']) {
+        return productOptions['شيشة'];
+    }
+
+    // Check by name for other products
     for (let key in productOptions) {
         if (productName.includes(key)) {
             return productOptions[key];
@@ -360,7 +393,7 @@ function showProductOptions(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
 
-    const options = getProductOptions(product.name);
+    const options = getProductOptions(product.name, product.category, product.id);
 
     if (!options) {
         addToCartDirect(productId);
@@ -409,10 +442,30 @@ function selectOption(optionKey, value, type, element) {
         });
         element.classList.add('selected');
         element.querySelector('input').checked = true;
-    }
 
-    if (!selectedProductForOptions) return;
-    selectedProductForOptions.selectedOptions[optionKey] = value;
+        if (!selectedProductForOptions) return;
+        selectedProductForOptions.selectedOptions[optionKey] = value;
+    } else if (type === 'checkbox') {
+        element.classList.toggle('selected');
+        const checkbox = element.querySelector('input');
+        checkbox.checked = !checkbox.checked;
+
+        if (!selectedProductForOptions) return;
+
+        // Handle multiple checkbox selections
+        if (!selectedProductForOptions.selectedOptions[optionKey]) {
+            selectedProductForOptions.selectedOptions[optionKey] = [];
+        }
+
+        if (checkbox.checked) {
+            if (!selectedProductForOptions.selectedOptions[optionKey].includes(value)) {
+                selectedProductForOptions.selectedOptions[optionKey].push(value);
+            }
+        } else {
+            selectedProductForOptions.selectedOptions[optionKey] =
+                selectedProductForOptions.selectedOptions[optionKey].filter(v => v !== value);
+        }
+    }
 }
 
 function closeProductOptions() {
@@ -428,7 +481,7 @@ function confirmProductOptions() {
     if (!selectedProductForOptions) return;
 
     const product = selectedProductForOptions.product;
-    const options = getProductOptions(product.name);
+    const options = getProductOptions(product.name, product.category, product.id);
 
     for (let optionKey in options) {
         if (options[optionKey].required && !selectedProductForOptions.selectedOptions[optionKey]) {
@@ -446,7 +499,14 @@ function confirmProductOptions() {
 
     let optionsText = '';
     for (let key in selectedProductForOptions.selectedOptions) {
-        optionsText += selectedProductForOptions.selectedOptions[key] + ' ';
+        const value = selectedProductForOptions.selectedOptions[key];
+        if (Array.isArray(value)) {
+            if (value.length > 0) {
+                optionsText += value.join(', ') + ' ';
+            }
+        } else {
+            optionsText += value + ' ';
+        }
     }
     if (selectedProductForOptions.note) {
         optionsText += `(${selectedProductForOptions.note})`;
