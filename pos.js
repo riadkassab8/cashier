@@ -123,13 +123,13 @@ function generateOrderNumber() {
 // تهيئة الطاولات
 function initializeTables() {
     const tables = [];
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= 100; i++) {
         tables.push({
             id: i,
             name: `طاولة ${i}`,
             status: 'available', // available, occupied, reserved
             orderId: null,
-            capacity: i <= 10 ? 4 : 6
+            capacity: i <= 30 ? 4 : i <= 70 ? 6 : 8
         });
     }
     localStorage.setItem('tables', JSON.stringify(tables));
