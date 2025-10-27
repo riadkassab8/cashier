@@ -4,164 +4,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام كاشير المقهى</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>نظام كاشير المقهى - ابدأ هنا</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Cairo', 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #3e2723 0%, #8b4513 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: 2rem;
+            padding: 3rem;
+            max-width: 900px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header i {
+            font-size: 5rem;
+            color: #8b4513;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            color: #3e2723;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #795548;
+            font-size: 1.1rem;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #fdf6e3 0%, #fff 100%);
+            border: 3px solid #d7ccc8;
+            border-radius: 1rem;
+            padding: 2.5rem 3rem;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            max-width: 400px;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(139, 69, 19, 0.2);
+            border-color: #8b4513;
+        }
+
+        .card i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .card.login i {
+            color: #8b4513;
+        }
+
+        .card.dashboard i {
+            color: #10b981;
+        }
+
+        .card.pos i {
+            color: #3b82f6;
+        }
+
+        .card h2 {
+            color: #3e2723;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: #795548;
+            font-size: 0.95rem;
+        }
+
+        .info-box {
+            background: #fef3c7;
+            border-right: 4px solid #f59e0b;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-box h3 {
+            color: #92400e;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .accounts {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .account {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .account strong {
+            color: #8b4513;
+        }
+
+        .features {
+            background: #f0fdf4;
+            border-right: 4px solid #10b981;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .features h3 {
+            color: #166534;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features li {
+            color: #166534;
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .features li i {
+            color: #10b981;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <i class="fas fa-mug-hot"></i>
-                <h1>نظام كاشير المقهى</h1>
-            </div>
-            <div class="user-info">
-                <span class="cashier-name"><strong id="cashierName">أحمد محمد</strong></span>
-                <a href="dashboard.html" class="btn-dashboard"
-                    style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; transition: all 0.3s;">
-                    <i class="fas fa-chart-line"></i> لوحة التحكم
-                </a>
-                <span class="date-time" id="dateTime"></span>
-                <button class="btn-logout" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> تسجيل خروج
-                </button>
-            </div>
-        </header>
-
-        <div class="main-content">
-            <!-- Left Panel - Products -->
-            <aside class="products-panel">
-                <div class="search-bar">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchProduct" placeholder="ابحث عن المنتجات..." onkeyup="searchProducts()">
-                </div>
-
-                <div class="categories">
-                    <button class="category-btn active" onclick="filterCategory('all')">الكل</button>
-                    <button class="category-btn" onclick="filterCategory('hot-drinks')">مشروبات ساخنة</button>
-                    <button class="category-btn" onclick="filterCategory('cold-drinks')">مشروبات باردة</button>
-                    <button class="category-btn" onclick="filterCategory('pastries')">معجنات</button>
-                    <button class="category-btn" onclick="filterCategory('snacks')">وجبات خفيفة</button>
-                </div>
-
-                <div class="products-grid" id="productsGrid">
-                    <!-- Products will be loaded here -->
-                </div>
-            </aside>
-
-            <!-- Right Panel - Cart & Checkout -->
-            <main class="checkout-panel">
-                <div class="cart-section">
-                    <h2><i class="fas fa-shopping-cart"></i> الطلب الحالي</h2>
-
-                    <div class="cart-items" id="cartItems">
-                        <div class="empty-cart">
-                            <i class="fas fa-shopping-basket"></i>
-                            <p>لا توجد منتجات في السلة</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="totals-section">
-                    <div class="total-row">
-                        <span>المجموع الفرعي:</span>
-                        <span id="subtotal">0.00 ج.م</span>
-                    </div>
-                    <div class="total-row">
-                        <span>الضريبة (10%):</span>
-                        <span id="tax">0.00 ج.م</span>
-                    </div>
-                    <div class="total-row discount-row">
-                        <span>الخصم:</span>
-                        <span id="discount">0.00 ج.م</span>
-                    </div>
-                    <div class="total-row grand-total">
-                        <span>الإجمالي:</span>
-                        <span id="grandTotal">0.00 ج.م</span>
-                    </div>
-                </div>
-
-                <div class="actions-section">
-                    <button class="btn btn-secondary" id="discountBtn" onclick="applyDiscount()">
-                        <i class="fas fa-percent"></i> خصم
-                    </button>
-                    <button class="btn btn-danger" onclick="clearCart()">
-                        <i class="fas fa-trash"></i> مسح
-                    </button>
-                    <button class="btn btn-primary btn-large" onclick="processPayment()">
-                        <i class="fas fa-credit-card"></i> إتمام الدفع
-                    </button>
-                </div>
-            </main>
+        <div class="header">
+            <i class="fas fa-mug-hot"></i>
+            <h1>نظام كاشير المقهى الاحترافي</h1>
+            <p>نظام نقاط بيع متكامل مع لوحة تحكم وتقارير</p>
         </div>
-    </div>
 
-    <!-- Payment Modal -->
-    <div id="paymentModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closePaymentModal()">&times;</span>
-            <h2><i class="fas fa-credit-card"></i> الدفع</h2>
-
-            <div class="payment-amount">
-                <p>المبلغ الإجمالي:</p>
-                <h1 id="paymentTotal">0.00 ج.م</h1>
-            </div>
-
-            <div class="payment-methods">
-                <button class="payment-btn" onclick="selectPaymentMethod('cash')">
-                    <i class="fas fa-money-bill-wave"></i>
-                    <span>نقدي</span>
-                </button>
-                <button class="payment-btn" onclick="selectPaymentMethod('card')">
-                    <i class="fas fa-credit-card"></i>
-                    <span>بطاقة</span>
-                </button>
-                <button class="payment-btn" onclick="selectPaymentMethod('mobile')">
-                    <i class="fas fa-mobile-alt"></i>
-                    <span>محفظة إلكترونية</span>
-                </button>
-            </div>
-
-            <div id="cashPayment" class="payment-details" style="display:none;">
-                <label>المبلغ المستلم:</label>
-                <input type="number" id="cashReceived" placeholder="0.00" step="0.01" min="0"
-                    oninput="calculateChange()">
-                <div class="change-display">
-                    <span>الباقي:</span>
-                    <span id="changeAmount">0.00 ج.م</span>
-                </div>
-            </div>
-
-            <button class="btn btn-success btn-large" onclick="completePayment()">
-                <i class="fas fa-check"></i> إتمام العملية
-            </button>
+        <div class="cards">
+            <a href="login.html" class="card login">
+                <i class="fas fa-sign-in-alt"></i>
+                <h2>تسجيل الدخول</h2>
+                <p>ابدأ من هنا - سجل دخولك للنظام</p>
+            </a>
         </div>
-    </div>
 
-    <!-- Receipt Modal -->
-    <div id="receiptModal" class="modal">
-        <div class="modal-content receipt-modal">
-            <span class="close" onclick="closeReceiptModal()">&times;</span>
-            <div id="receiptContent" class="receipt">
-                <!-- Receipt will be generated here -->
-            </div>
-            <div class="receipt-actions">
-                <button class="btn btn-secondary" onclick="printReceipt()">
-                    <i class="fas fa-print"></i> طباعة
-                </button>
-                <button class="btn btn-primary" onclick="closeReceiptModal()">
-                    <i class="fas fa-check"></i> تم
-                </button>
-            </div>
-        </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="auth.js"></script>
-    <script src="script.js"></script>
+    </div>
 </body>
 
 </html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إعادة تعيين المنتجات</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Cairo', Tahoma, sans-serif;
+            padding: 40px;
+            text-align: center;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #8b4513;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: #8b4513;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        button:hover {
+            background: #6d3410;
+        }
+
+        .warning {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>إعادة تعيين المنتجات</h1>
+        <div class="warning">
+            <strong>تحذير:</strong> هذا سيحذف جميع المنتجات الحالية ويعيد تحميل المنتجات الافتراضية بما في ذلك منتجات
+            الشيشة.
+        </div>
+        <button onclick="resetProducts()">إعادة تعيين المنتجات</button>
+        <button onclick="window.location.href='pos.html'" style="background: #64748b;">العودة لنقطة البيع</button>
+        <div class="success" id="successMsg">
+            تم إعادة تعيين المنتجات بنجاح! يمكنك العودة لنقطة البيع الآن.
+        </div>
+    </div>
+
+    <script>
+        function resetProducts() {
+            const products = [
+                // مشروبات ساخنة
+                { id: 1, name: 'إسبريسو', price: 9.00, category: 'hot-drinks', icon: 'fa-mug-hot', stock: 100 },
+                { id: 2, name: 'أمريكانو', price: 11.00, category: 'hot-drinks', icon: 'fa-mug-hot', stock: 100 },
+                { id: 3, name: 'كابتشينو', price: 14.00, category: 'hot-drinks', icon: 'fa-mug-saucer', stock: 100 },
+                { id: 4, name: 'لاتيه', price: 16.00, category: 'hot-drinks', icon: 'fa-mug-saucer', stock: 100 },
+                { id: 5, name: 'موكا', price: 17.00, category: 'hot-drinks', icon: 'fa-mug-hot', stock: 100 },
+                { id: 6, name: 'فلات وايت', price: 15.00, category: 'hot-drinks', icon: 'fa-mug-saucer', stock: 100 },
+                { id: 7, name: 'ماكياتو', price: 13.00, category: 'hot-drinks', icon: 'fa-mug-hot', stock: 100 },
+                { id: 8, name: 'شوكولاتة ساخنة', price: 12.00, category: 'hot-drinks', icon: 'fa-mug-hot', stock: 80 },
+                { id: 9, name: 'شاي', price: 8.00, category: 'hot-drinks', icon: 'fa-mug-hot', stock: 100 },
+                { id: 10, name: 'شاي لاتيه', price: 15.00, category: 'hot-drinks', icon: 'fa-mug-saucer', stock: 80 },
+
+                // مشروبات باردة
+                { id: 11, name: 'قهوة مثلجة', price: 13.00, category: 'cold-drinks', icon: 'fa-glass-water', stock: 100 },
+                { id: 12, name: 'لاتيه مثلج', price: 17.00, category: 'cold-drinks', icon: 'fa-glass-water', stock: 100 },
+                { id: 13, name: 'موكا مثلج', price: 18.00, category: 'cold-drinks', icon: 'fa-glass-water', stock: 100 },
+                { id: 14, name: 'أمريكانو مثلج', price: 12.00, category: 'cold-drinks', icon: 'fa-glass-water', stock: 100 },
+                { id: 15, name: 'كولد برو', price: 15.00, category: 'cold-drinks', icon: 'fa-glass-water', stock: 80 },
+                { id: 16, name: 'فرابتشينو', price: 20.00, category: 'cold-drinks', icon: 'fa-blender', stock: 80 },
+                { id: 17, name: 'سموذي', price: 21.00, category: 'cold-drinks', icon: 'fa-blender', stock: 60 },
+                { id: 18, name: 'عصير طازج', price: 16.00, category: 'cold-drinks', icon: 'fa-glass-water', stock: 50 },
+                { id: 19, name: 'شاي مثلج', price: 10.00, category: 'cold-drinks', icon: 'fa-glass-water', stock: 80 },
+                { id: 20, name: 'ليموناضة', price: 11.00, category: 'cold-drinks', icon: 'fa-lemon', stock: 70 },
+
+                // معجنات
+                { id: 21, name: 'كرواسون', price: 12.00, category: 'pastries', icon: 'fa-bread-slice', stock: 40 },
+                { id: 22, name: 'كرواسون ', price: 14.00, category: 'pastries', icon: 'fa-bread-slice', stock: 35 },
+                { id: 23, name: 'مافن بالتوت', price: 11.00, category: 'pastries', icon: 'fa-cake-candles', stock: 30 },
+                { id: 24, name: 'مافن بالشوكولاتة', price: 11.00, category: 'pastries', icon: 'fa-cake-candles', stock: 30 },
+                { id: 25, name: 'سينابون', price: 15.00, category: 'pastries', icon: 'fa-cookie', stock: 25 },
+                { id: 26, name: 'دونات', price: 9.00, category: 'pastries', icon: 'fa-cookie', stock: 40 },
+                { id: 27, name: 'بيجل', price: 8.00, category: 'pastries', icon: 'fa-bread-slice', stock: 35 },
+                { id: 28, name: 'سكون', price: 10.00, category: 'pastries', icon: 'fa-cookie', stock: 30 },
+                { id: 29, name: 'معجنات دنماركية', price: 13.00, category: 'pastries', icon: 'fa-cookie', stock: 25 },
+                { id: 30, name: 'براوني', price: 12.00, category: 'pastries', icon: 'fa-cookie', stock: 30 },
+
+                // وجبات خفيفة
+                { id: 31, name: 'ساندويتش', price: 23.00, category: 'snacks', icon: 'fa-burger', stock: 25 },
+                { id: 32, name: 'بانيني', price: 25.00, category: 'snacks', icon: 'fa-burger', stock: 20 },
+                { id: 33, name: 'سلطة', price: 27.00, category: 'snacks', icon: 'fa-bowl-food', stock: 20 },
+                { id: 34, name: 'زبادي بالفواكه', price: 17.00, category: 'snacks', icon: 'fa-ice-cream', stock: 25 },
+                { id: 35, name: 'كوب فواكه', price: 14.00, category: 'snacks', icon: 'fa-apple-whole', stock: 30 },
+                { id: 36, name: 'شيبس', price: 7.00, category: 'snacks', icon: 'fa-cookie', stock: 50 },
+                { id: 37, name: 'جرانولا بار', price: 9.00, category: 'snacks', icon: 'fa-cookie', stock: 40 },
+                { id: 38, name: 'كوكيز', price: 8.00, category: 'snacks', icon: 'fa-cookie', stock: 45 },
+                { id: 39, name: 'بسكوتي', price: 10.00, category: 'snacks', icon: 'fa-cookie', stock: 35 },
+                { id: 40, name: 'بروتين بار', price: 12.00, category: 'snacks', icon: 'fa-cookie', stock: 30 },
+
+                // شيشة
+                { id: 41, name: 'لاكي طبعي', price: 50.00, category: 'shisha', icon: 'fa-wind', stock: 30 },
+                { id: 42, name: 'معسل', price: 45.00, category: 'shisha', icon: 'fa-wind', stock: 30 },
+                { id: 43, name: 'معسل دبل', price: 55.00, category: 'shisha', icon: 'fa-wind', stock: 25 },
+                { id: 44, name: 'زعلوك', price: 40.00, category: 'shisha', icon: 'fa-wind', stock: 30 },
+                { id: 45, name: 'اسلملر ليمون', price: 48.00, category: 'shisha', icon: 'fa-wind', stock: 25 },
+                { id: 46, name: 'ميت نعناع', price: 45.00, category: 'shisha', icon: 'fa-wind', stock: 30 },
+                { id: 47, name: 'ثلج سيسة', price: 50.00, category: 'shisha', icon: 'fa-wind', stock: 20 },
+                { id: 48, name: 'لاكي فاخر', price: 60.00, category: 'shisha', icon: 'fa-wind', stock: 20 },
+                { id: 49, name: 'فاخر مزايا', price: 65.00, category: 'shisha', icon: 'fa-wind', stock: 15 },
+                { id: 50, name: 'فواكه خاص', price: 55.00, category: 'shisha', icon: 'fa-wind', stock: 20 }
+            ];
+
+            localStorage.setItem('products', JSON.stringify(products));
+            document.getElementById('successMsg').style.display = 'block';
+            console.log('تم إعادة تعيين', products.length, 'منتج');
+        }
+    </script>
+</body>
+
+</html>

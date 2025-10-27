@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام كاشير المقهى - نقطة البيع</title>
+    <link rel="stylesheet" href="pos-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+
+<body>
+    <div class="pos-container">
+        <!-- Header -->
+        <header class="pos-header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-mug-hot"></i>
+                    <span>مقهى القهوة</span>
+                </div>
+                <div class="header-time" id="headerTime"></div>
+            </div>
+
+            <div class="header-center">
+                <button class="header-btn" onclick="showTables()">
+                    <i class="fas fa-chair"></i>
+                    <span>الطاولات</span>
+                </button>
+                <button class="header-btn" id="currentTableBtn" onclick="changeTable()">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span id="currentTableName">طاولة 1</span>
+                </button>
+            </div>
+
+            <div class="header-right">
+                <span class="cashier-info">
+                    <i class="fas fa-user"></i>
+                    <span id="cashierName">الكاشير</span>
+                </span>
+                <button class="header-btn" id="dashboardBtn" onclick="window.location.href='dashboard.html'"
+                    style="display: none;">
+                    <i class="fas fa-chart-line"></i>
+                </button>
+                <button class="header-btn" onclick="closeShift()" style="background: #f59e0b;">
+                    <i class="fas fa-door-open"></i>
+                    <span>إغلاق الشيفت</span>
+                </button>
+                <button class="header-btn btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="pos-main">
+            <!-- Left Sidebar - Open Orders -->
+            <aside class="orders-sidebar">
+                <div class="sidebar-header">
+                    <h3><i class="fas fa-list"></i> الطلبات المفتوحة</h3>
+                    <button class="btn-new-order" onclick="newOrder()">
+                        <i class="fas fa-plus"></i> جديد
+                    </button>
+                </div>
+                <div class="orders-list" id="ordersList">
+                    <!-- Orders will be loaded here -->
+                </div>
+            </aside>
+
+            <!-- Center - Products -->
+            <main class="products-area">
+                <div class="categories-bar">
+                    <button class="category-tab active" data-category="all" onclick="filterProducts('all')">
+                        الكل
+                    </button>
+                    <button class="category-tab hot-drinks" data-category="hot-drinks"
+                        onclick="filterProducts('hot-drinks')">
+                        مشروبات ساخنة
+                    </button>
+                    <button class="category-tab cold-drinks" data-category="cold-drinks"
+                        onclick="filterProducts('cold-drinks')">
+                        مشروبات باردة
+                    </button>
+                    <button class="category-tab pastries" data-category="pastries" onclick="filterProducts('pastries')">
+                        معجنات
+                    </button>
+                    <button class="category-tab snacks" data-category="snacks" onclick="filterProducts('snacks')">
+                        وجبات خفيفة
+                    </button>
+                    <button class="category-tab shisha" data-category="shisha" onclick="filterProducts('shisha')">
+                        شيشة
+                    </button>
+                </div>
+
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="productSearch" placeholder="ابحث عن منتج..." oninput="searchProducts()">
+                </div>
+
+                <div class="products-grid" id="productsGrid">
+                    <!-- Products will be loaded here -->
+                </div>
+            </main>
+
+            <!-- Right Sidebar - Cart & Payment -->
+            <aside class="cart-sidebar">
+                <div class="cart-header">
+                    <h3><i class="fas fa-shopping-cart"></i> الطلب الحالي</h3>
+                    <span class="order-number" id="orderNumber">#0001</span>
+                </div>
+
+                <div class="cart-items" id="cartItems">
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-basket"></i>
+                        <p>لا توجد منتجات</p>
+                    </div>
+                </div>
+
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>المجموع الفرعي:</span>
+                        <span id="subtotal">0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>الضريبة (10%):</span>
+                        <span id="tax">0.00</span>
+                    </div>
+                    <div class="summary-row discount-row">
+                        <span>الخصم:</span>
+                        <span id="discount">0.00</span>
+                    </div>
+                    <div class="summary-row total-row">
+                        <span>الإجمالي:</span>
+                        <span id="grandTotal" class="total-amount">0.00</span>
+                    </div>
+                </div>
+
+                <div class="cart-actions">
+                    <button class="action-btn btn-discount" id="discountBtn" onclick="applyDiscount()">
+                        <i class="fas fa-percent"></i>
+                        خصم
+                    </button>
+                    <button class="action-btn btn-clear" onclick="clearCart()">
+                        <i class="fas fa-trash"></i>
+                        مسح
+                    </button>
+                    <button class="action-btn btn-hold" onclick="holdOrder()">
+                        <i class="fas fa-pause"></i>
+                        تعليق
+                    </button>
+                </div>
+
+                <!-- Numpad -->
+                <div class="numpad">
+                    <div class="numpad-display">
+                        <input type="text" id="numpadDisplay" placeholder="المبلغ المستلم" value=""
+                            oninput="handleNumpadKeyboard(event)" onkeypress="validateNumpadInput(event)"
+                            onkeydown="handleNumpadKeydown(event)">
+                    </div>
+                    <div class="numpad-buttons">
+                        <button onclick="numpadInput('7')">7</button>
+                        <button onclick="numpadInput('8')">8</button>
+                        <button onclick="numpadInput('9')">9</button>
+                        <button onclick="numpadInput('4')">4</button>
+                        <button onclick="numpadInput('5')">5</button>
+                        <button onclick="numpadInput('6')">6</button>
+                        <button onclick="numpadInput('1')">1</button>
+                        <button onclick="numpadInput('2')">2</button>
+                        <button onclick="numpadInput('3')">3</button>
+                        <button onclick="numpadInput('0')" class="btn-zero">0</button>
+                        <button onclick="numpadInput('.')">.</button>
+                        <button onclick="numpadClear()" class="btn-clear-num">C</button>
+                    </div>
+                </div>
+
+                <!-- Payment Buttons -->
+                <div class="payment-section">
+                    <div class="payment-header">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <span>اختر طريقة الدفع</span>
+                    </div>
+                    <div class="payment-buttons">
+                        <button class="payment-btn btn-cash" onclick="processPayment('cash')">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>نقدي</span>
+                        </button>
+                        <button class="payment-btn btn-card" onclick="processPayment('card')">
+                            <i class="fas fa-credit-card"></i>
+                            <span>بطاقة</span>
+                        </button>
+                        <button class="payment-btn btn-mobile" onclick="processPayment('mobile')">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>محفظة</span>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Status Bar -->
+        <footer class="status-bar">
+            <div class="status-left">
+                <span><i class="fas fa-calendar"></i> <span id="statusDate"></span></span>
+                <span><i class="fas fa-clock"></i> <span id="statusTime"></span></span>
+            </div>
+            <div class="status-center">
+                <span class="status-table"><i class="fas fa-chair"></i> <span id="statusTableName">طاولة 1</span></span>
+                <span class="status-items"><i class="fas fa-shopping-cart"></i> <span id="statusItems">0</span>
+                    منتج</span>
+            </div>
+            <div class="status-right">
+                <span class="status-total">الإجمالي: <strong id="statusTotal">0.00 ج.م</strong></span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Tables Modal -->
+    <div id="tablesModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2><i class="fas fa-chair"></i> إدارة الطاولات</h2>
+                <span class="close" onclick="closeTablesModal()">&times;</span>
+            </div>
+            <div class="tables-grid" id="tablesGrid">
+                <!-- Tables will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Table Modal -->
+    <div id="changeTableModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-exchange-alt"></i> نقل الطلب إلى طاولة أخرى</h2>
+                <span class="close" onclick="closeChangeTableModal()">&times;</span>
+            </div>
+            <div class="change-table-grid" id="changeTableGrid">
+                <!-- Available tables will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="auth.js"></script>
+    <script src="pos.js"></script>
+</body>
+
+</html>

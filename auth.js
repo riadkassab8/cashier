@@ -1,9 +1,19 @@
 // نظام المستخدمين
-const users = [
-    { username: 'admin', password: '1234', role: 'admin', name: 'أحمد المدير' },
-    { username: 'supervisor', password: '1234', role: 'supervisor', name: 'محمد المشرف' },
-    { username: 'cashier', password: '1234', role: 'cashier', name: 'علي الكاشير' }
-];
+function getUsers() {
+    const users = JSON.parse(localStorage.getItem('users'));
+    if (!users || users.length === 0) {
+        // المستخدمين الافتراضيين
+        const defaultUsers = [
+            { username: 'admin', password: 'admin123', role: 'admin', name: 'أحمد المدير' },
+            { username: 'supervisor', password: 'super123', role: 'supervisor', name: 'محمد المشرف' },
+            { username: 'cashier', password: 'cash123', role: 'cashier', name: 'علي الكاشير' },
+            { username: 'yaseen', password: '123456', role: 'cashier', name: 'ياسين الكاشير' }
+        ];
+        localStorage.setItem('users', JSON.stringify(defaultUsers));
+        return defaultUsers;
+    }
+    return users;
+}
 
 // التحقق من تسجيل الدخول
 function handleLogin(event) {
@@ -13,6 +23,7 @@ function handleLogin(event) {
     const password = document.getElementById('password').value;
     const role = document.getElementById('role').value;
 
+    const users = getUsers();
     const user = users.find(u =>
         u.username === username &&
         u.password === password &&
@@ -41,7 +52,7 @@ function handleLogin(event) {
             if (user.role === 'admin' || user.role === 'supervisor') {
                 window.location.href = 'dashboard.html';
             } else {
-                window.location.href = 'index.html';
+                window.location.href = 'pos.html';
             }
         });
     } else {

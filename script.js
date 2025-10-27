@@ -26,7 +26,7 @@ const products = [
 
     // معجنات
     { id: 21, name: 'كرواسون', price: 12.00, category: 'pastries', icon: 'fa-croissant', stock: 40 },
-    { id: 22, name: 'كرواسون بالشوكولاتة', price: 14.00, category: 'pastries', icon: 'fa-croissant', stock: 35 },
+    { id: 22, name: 'كرواسون ', price: 14.00, category: 'pastries', icon: 'fa-croissant', stock: 35 },
     { id: 23, name: 'مافن بالتوت', price: 11.00, category: 'pastries', icon: 'fa-cake-candles', stock: 30 },
     { id: 24, name: 'مافن بالشوكولاتة', price: 11.00, category: 'pastries', icon: 'fa-cake-candles', stock: 30 },
     { id: 25, name: 'سينابون', price: 15.00, category: 'pastries', icon: 'fa-cookie', stock: 25 },

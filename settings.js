@@ -22,10 +22,10 @@ document.getElementById('userName').textContent = `${currentUser.name} (مدير
 
 // تحميل المستخدمين
 function loadUsers() {
-    const users = [
-        { username: 'admin', name: 'أحمد المدير', role: 'admin' },
-        { username: 'supervisor', name: 'محمد المشرف', role: 'supervisor' },
-        { username: 'cashier', name: 'علي الكاشير', role: 'cashier' }
+    const users = JSON.parse(localStorage.getItem('users')) || [
+        { username: 'admin', password: 'admin123', name: 'أحمد المدير', role: 'admin' },
+        { username: 'supervisor', password: 'super123', name: 'محمد المشرف', role: 'supervisor' },
+        { username: 'cashier', password: 'cash123', name: 'علي الكاشير', role: 'cashier' }
     ];
 
     const tbody = document.getElementById('usersTableBody');
@@ -61,17 +61,42 @@ function loadProductsSettings() {
     const products = JSON.parse(localStorage.getItem('products')) || [];
     const grid = document.getElementById('productsGrid');
 
-    grid.innerHTML = products.slice(0, 12).map(product => `
+    if (products.length === 0) {
+        grid.innerHTML = '<p style="text-align: center; color: #795548; padding: 2rem;">لا توجد منتجات. اضغط على "إضافة منتج جديد" لإضافة منتج.</p>';
+        return;
+    }
+
+    grid.innerHTML = products.map(product => `
         <div class="product-item">
             <i class="fas ${product.icon}" style="font-size: 2rem; color: #8b4513; margin-bottom: 0.5rem;"></i>
             <h4>${product.name}</h4>
             <div class="price">${product.price.toFixed(2)} ج.م</div>
             <p style="color: #795548; font-size: 0.9rem;">المخزون: ${product.stock}</p>
-            <button class="btn-action btn-edit" onclick="editProduct(${product.id})" style="margin-top: 0.5rem;">
-                <i class="fas fa-edit"></i> تعديل
-            </button>
+            <p style="color: #64748b; font-size: 0.85rem; margin-top: 0.25rem;">
+                ${getCategoryNameArabic(product.category)}
+            </p>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                <button class="btn-action btn-edit" onclick="editProduct(${product.id})" style="flex: 1;">
+                    <i class="fas fa-edit"></i> تعديل
+                </button>
+                <button class="btn-action btn-delete" onclick="deleteProduct(${product.id})" style="flex: 1;">
+                    <i class="fas fa-trash"></i> حذف
+                </button>
+            </div>
         </div>
     `).join('');
+}
+
+// الحصول على اسم الفئة بالعربي
+function getCategoryNameArabic(category) {
+    const categories = {
+        'hot-drinks': 'مشروبات ساخنة',
+        'cold-drinks': 'مشروبات باردة',
+        'pastries': 'معجنات',
+        'snacks': 'وجبات خفيفة',
+        'shisha': 'شيشة'
+    };
+    return categories[category] || category;
 }
 
 // حفظ إعدادات المقهى
@@ -139,6 +164,46 @@ async function addNewUser() {
     });
 
     if (formValues) {
+        // التحقق من صحة البيانات
+        if (!formValues.name || !formValues.username || !formValues.password) {
+            Swal.fire({
+                icon: 'error',
+                title: 'خطأ',
+                text: 'الرجاء ملء جميع الحقول',
+                confirmButtonColor: '#ef4444'
+            });
+            return;
+        }
+
+        // الحصول على المستخدمين الحاليين
+        const users = JSON.parse(localStorage.getItem('users')) || [
+            { username: 'admin', password: 'admin123', name: 'أحمد المدير', role: 'admin' },
+            { username: 'supervisor', password: 'super123', name: 'محمد المشرف', role: 'supervisor' },
+            { username: 'cashier', password: 'cash123', name: 'علي الكاشير', role: 'cashier' }
+        ];
+
+        // التحقق من عدم تكرار اسم المستخدم
+        if (users.some(u => u.username === formValues.username)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'خطأ',
+                text: 'اسم المستخدم موجود بالفعل',
+                confirmButtonColor: '#ef4444'
+            });
+            return;
+        }
+
+        // إضافة المستخدم الجديد
+        users.push({
+            username: formValues.username,
+            password: formValues.password,
+            name: formValues.name,
+            role: formValues.role
+        });
+
+        // حفظ في localStorage
+        localStorage.setItem('users', JSON.stringify(users));
+
         Swal.fire({
             icon: 'success',
             title: 'تم الإضافة',
@@ -152,13 +217,27 @@ async function addNewUser() {
 
 // تعديل مستخدم
 async function editUser(username) {
+    // الحصول على بيانات المستخدم الحالية
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const user = users.find(u => u.username === username);
+
+    if (!user) {
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'المستخدم غير موجود',
+            confirmButtonColor: '#ef4444'
+        });
+        return;
+    }
+
     const { value: formValues } = await Swal.fire({
         title: 'تعديل المستخدم',
         html: `
             <div style="text-align: right;">
                 <div style="margin-bottom: 1rem;">
                     <label style="display: block; margin-bottom: 0.5rem;">الاسم الكامل</label>
-                    <input id="editUserName" class="swal2-input" value="اسم المستخدم">
+                    <input id="editUserName" class="swal2-input" value="${user.name}">
                 </div>
                 <div style="margin-bottom: 1rem;">
                     <label style="display: block; margin-bottom: 0.5rem;">كلمة المرور الجديدة (اتركها فارغة للإبقاء على القديمة)</label>
@@ -167,8 +246,9 @@ async function editUser(username) {
                 <div style="margin-bottom: 1rem;">
                     <label style="display: block; margin-bottom: 0.5rem;">الصلاحية</label>
                     <select id="editRole" class="swal2-input">
-                        <option value="cashier">كاشير</option>
-                        <option value="supervisor">مشرف</option>
+                        <option value="cashier" ${user.role === 'cashier' ? 'selected' : ''}>كاشير</option>
+                        <option value="supervisor" ${user.role === 'supervisor' ? 'selected' : ''}>مشرف</option>
+                        ${user.role === 'admin' ? '<option value="admin" selected>مدير</option>' : ''}
                     </select>
                 </div>
             </div>
@@ -177,10 +257,40 @@ async function editUser(username) {
         showCancelButton: true,
         confirmButtonText: 'حفظ',
         cancelButtonText: 'إلغاء',
-        confirmButtonColor: '#8b4513'
+        confirmButtonColor: '#8b4513',
+        preConfirm: () => {
+            return {
+                name: document.getElementById('editUserName').value,
+                password: document.getElementById('editPassword').value,
+                role: document.getElementById('editRole').value
+            };
+        }
     });
 
     if (formValues) {
+        // التحقق من صحة البيانات
+        if (!formValues.name) {
+            Swal.fire({
+                icon: 'error',
+                title: 'خطأ',
+                text: 'الرجاء إدخال الاسم',
+                confirmButtonColor: '#ef4444'
+            });
+            return;
+        }
+
+        // تحديث بيانات المستخدم
+        user.name = formValues.name;
+        user.role = formValues.role;
+
+        // تحديث كلمة المرور إذا تم إدخالها
+        if (formValues.password && formValues.password.trim() !== '') {
+            user.password = formValues.password;
+        }
+
+        // حفظ التحديثات
+        localStorage.setItem('users', JSON.stringify(users));
+
         Swal.fire({
             icon: 'success',
             title: 'تم التعديل',
@@ -188,6 +298,8 @@ async function editUser(username) {
             timer: 1500,
             showConfirmButton: false
         });
+
+        loadUsers();
     }
 }
 
@@ -205,6 +317,15 @@ async function deleteUser(username) {
     });
 
     if (result.isConfirmed) {
+        // الحصول على المستخدمين
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+
+        // حذف المستخدم
+        users = users.filter(u => u.username !== username);
+
+        // حفظ التحديث
+        localStorage.setItem('users', JSON.stringify(users));
+
         Swal.fire({
             icon: 'success',
             title: 'تم الحذف',
@@ -241,6 +362,26 @@ async function addNewProduct() {
                         <option value="cold-drinks">مشروبات باردة</option>
                         <option value="pastries">معجنات</option>
                         <option value="snacks">وجبات خفيفة</option>
+                        <option value="shisha">شيشة</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem;">الأيقونة</label>
+                    <select id="productIcon" class="swal2-input">
+                        <option value="fa-mug-hot">كوب ساخن</option>
+                        <option value="fa-mug-saucer">كوب بصحن</option>
+                        <option value="fa-glass-water">كوب ماء</option>
+                        <option value="fa-blender">خلاط</option>
+                        <option value="fa-lemon">ليمون</option>
+                        <option value="fa-bread-slice">خبز</option>
+                        <option value="fa-cake-candles">كيك</option>
+                        <option value="fa-cookie">كوكيز</option>
+                        <option value="fa-burger">برجر</option>
+                        <option value="fa-bowl-food">سلطة</option>
+                        <option value="fa-ice-cream">آيس كريم</option>
+                        <option value="fa-apple-whole">تفاحة</option>
+                        <option value="fa-wind">شيشة</option>
+                        <option value="fa-smoking">دخان</option>
                     </select>
                 </div>
             </div>
@@ -249,10 +390,51 @@ async function addNewProduct() {
         showCancelButton: true,
         confirmButtonText: 'إضافة',
         cancelButtonText: 'إلغاء',
-        confirmButtonColor: '#8b4513'
+        confirmButtonColor: '#8b4513',
+        preConfirm: () => {
+            const name = document.getElementById('productName').value;
+            const price = document.getElementById('productPrice').value;
+            const stock = document.getElementById('productStock').value;
+            const category = document.getElementById('productCategory').value;
+            const icon = document.getElementById('productIcon').value;
+
+            if (!name || !price || !stock) {
+                Swal.showValidationMessage('الرجاء ملء جميع الحقول');
+                return false;
+            }
+
+            return {
+                name: name,
+                price: parseFloat(price),
+                stock: parseInt(stock),
+                category: category,
+                icon: icon
+            };
+        }
     });
 
     if (formValues) {
+        // تحميل المنتجات الحالية
+        const products = JSON.parse(localStorage.getItem('products')) || [];
+
+        // إنشاء معرف جديد
+        const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+
+        // إضافة المنتج الجديد
+        const newProduct = {
+            id: newId,
+            name: formValues.name,
+            price: formValues.price,
+            stock: formValues.stock,
+            category: formValues.category,
+            icon: formValues.icon
+        };
+
+        products.push(newProduct);
+
+        // حفظ في localStorage
+        localStorage.setItem('products', JSON.stringify(products));
+
         Swal.fire({
             icon: 'success',
             title: 'تم الإضافة',
@@ -260,6 +442,7 @@ async function addNewProduct() {
             timer: 1500,
             showConfirmButton: false
         });
+
         loadProductsSettings();
     }
 }
@@ -317,6 +500,60 @@ async function editProduct(productId) {
             timer: 1500,
             showConfirmButton: false
         });
+        loadProductsSettings();
+    }
+}
+
+// حذف منتج
+async function deleteProduct(productId) {
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const product = products.find(p => p.id === productId);
+
+    if (!product) {
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'المنتج غير موجود',
+            confirmButtonColor: '#ef4444'
+        });
+        return;
+    }
+
+    const result = await Swal.fire({
+        title: 'هل أنت متأكد؟',
+        html: `
+            <div style="text-align: center; padding: 1rem;">
+                <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                    سيتم حذف المنتج: <strong style="color: #ef4444;">${product.name}</strong>
+                </p>
+                <p style="color: #64748b; font-size: 0.9rem;">
+                    هذا الإجراء لا يمكن التراجع عنه
+                </p>
+            </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'نعم، احذف',
+        cancelButtonText: 'إلغاء'
+    });
+
+    if (result.isConfirmed) {
+        // حذف المنتج من المصفوفة
+        const updatedProducts = products.filter(p => p.id !== productId);
+
+        // حفظ التحديث
+        localStorage.setItem('products', JSON.stringify(updatedProducts));
+
+        Swal.fire({
+            icon: 'success',
+            title: 'تم الحذف',
+            text: `تم حذف المنتج "${product.name}" بنجاح`,
+            timer: 1500,
+            showConfirmButton: false
+        });
+
         loadProductsSettings();
     }
 }
