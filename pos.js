@@ -826,11 +826,11 @@ async function holdOrder() {
     openOrders.push({ ...currentOrder });
     localStorage.setItem('openOrders', JSON.stringify(openOrders));
 
-    // إبقاء الطاولة مشغولة (لأن هناك طلب معلق عليها)
+    // تحرير الطاولة (لأن الطلب المعلق ديليفري)
     const table = tables.find(t => t.id === currentOrder.tableId);
     if (table) {
-        table.status = 'occupied'; // تبقى مشغولة
-        table.orderId = currentOrder.id; // الاحتفاظ برقم الطلب
+        table.status = 'available'; // تحرير الطاولة
+        table.orderId = null;
         localStorage.setItem('tables', JSON.stringify(tables));
     }
 
@@ -879,10 +879,10 @@ async function holdOrder() {
         html: `
             <div style="text-align: center;">
                 <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">
-                    تم تعليق طلب <strong style="color: #f59e0b;">${table.name}</strong>
+                    تم تعليق الطلب <strong style="color: #f59e0b;">(ديليفري)</strong>
                 </p>
                 <p style="color: #64748b; font-size: 0.9rem;">
-                    الطاولة لا تزال مشغولة حتى يتم استكمال الطلب أو إلغاؤه
+                    ${table ? `${table.name} أصبحت متاحة الآن` : 'يمكنك العودة للطلب من القائمة الجانبية'}
                 </p>
             </div>
         `,
