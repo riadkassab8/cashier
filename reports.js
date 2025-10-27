@@ -422,78 +422,459 @@ function loadPaymentMethodsChart() {
     });
 }
 
-// قفل الشيفت
-async function closeShift() {
+// إدارة الشيفتات (للأدمن فقط) - Popup Card
+function loadShiftManagement() {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const cashiers = users.filter(u => u.role === 'cashier' || u.role === 'supervisor');
+    const shifts = JSON.parse(localStorage.getItem('userShifts')) || {};
+
+    if (cashiers.length === 0) {
+        Swal.fire({
+            icon: 'info',
+            title: 'لا يوجد كاشيرات',
+            text: 'لا يوجد كاشيرات مسجلين في النظام',
+            confirmButtonColor: '#8b4513'
+        });
+        return;
+    }
+
+    const cashiersHTML = cashiers.map(cashier => {
+        const shift = shifts[cashier.username] || { active: false };
+        const cashierSales = allSales.filter(s => {
+            if (!shift.active) return false;
+            const saleDate = new Date(s.completedAt || s.date);
+            const shiftStart = new Date(shift.startTime);
+            return s.cashier === cashier.name && saleDate >= shiftStart;
+        });
+        const totalSales = cashierSales.reduce((sum, s) => sum + s.total, 0);
+
+        const statusBadge = shift.active
+            ? '<span style="background: #dcfce7; color: #166534; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;"><i class="fas fa-circle" style="font-size: 0.5rem;"></i> نشط</span>'
+            : '<span style="background: #fee2e2; color: #991b1b; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;"><i class="fas fa-circle" style="font-size: 0.5rem;"></i> مغلق</span>';
+
+        const startTime = shift.startTime
+            ? new Date(shift.startTime).toLocaleString('ar-SA', {
+                hour: '2-digit',
+                minute: '2-digit',
+                day: '2-digit',
+                month: 'short'
+            })
+            : '-';
+
+        const duration = shift.active && shift.startTime
+            ? Math.floor((new Date() - new Date(shift.startTime)) / 1000 / 60)
+            : 0;
+
+        const actionBtn = shift.active
+            ? `<button class="swal-shift-btn swal-shift-btn-danger" onclick="endCashierShift('${cashier.username}', '${cashier.name}')">
+                <i class="fas fa-stop-circle"></i> إنهاء الشيفت
+               </button>`
+            : `<button class="swal-shift-btn swal-shift-btn-success" onclick="startCashierShift('${cashier.username}', '${cashier.name}')">
+                <i class="fas fa-play-circle"></i> بدء الشيفت
+               </button>`;
+
+        return `
+            <div class="shift-card ${shift.active ? 'shift-active' : 'shift-inactive'}">
+                <div class="shift-card-header">
+                    <div class="shift-card-user">
+                        <div class="shift-avatar">${cashier.name.charAt(0)}</div>
+                        <div>
+                            <h4>${cashier.name}</h4>
+                            <small>@${cashier.username}</small>
+                        </div>
+                    </div>
+                    ${statusBadge}
+                </div>
+
+                <div class="shift-card-stats">
+                    <div class="shift-stat">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <small>وقت البدء</small>
+                            <strong>${startTime}</strong>
+                        </div>
+                    </div>
+                    ${shift.active ? `
+                    <div class="shift-stat">
+                        <i class="fas fa-hourglass-half"></i>
+                        <div>
+                            <small>المدة</small>
+                            <strong>${duration} دقيقة</strong>
+                        </div>
+                    </div>
+                    ` : ''}
+                    <div class="shift-stat">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <div>
+                            <small>المبيعات</small>
+                            <strong>${totalSales.toFixed(2)} ج.م</strong>
+                        </div>
+                    </div>
+                    <div class="shift-stat">
+                        <i class="fas fa-shopping-cart"></i>
+                        <div>
+                            <small>الطلبات</small>
+                            <strong>${cashierSales.length}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="shift-card-actions">
+                    ${actionBtn}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    Swal.fire({
+        title: '<i class="fas fa-user-clock"></i> إدارة الشيفتات',
+        html: `
+            <style>
+                .shift-cards-container {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                    gap: 1rem;
+                    max-height: 70vh;
+                    overflow-y: auto;
+                    padding: 0.5rem;
+                    direction: rtl;
+                    text-align: right;
+                }
+
+                .shift-card {
+                    background: white;
+                    border: 2px solid #e5e7eb;
+                    border-radius: 1rem;
+                    padding: 1.5rem;
+                    transition: all 0.3s ease;
+                }
+
+                .shift-card:hover {
+                    transform: translateY(-4px);
+                    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+                }
+
+                .shift-active {
+                    border-color: #10b981;
+                    background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+                }
+
+                .shift-inactive {
+                    border-color: #e5e7eb;
+                    opacity: 0.8;
+                }
+
+                .shift-card-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 1rem;
+                    padding-bottom: 1rem;
+                    border-bottom: 2px solid #f1f5f9;
+                }
+
+                .shift-card-user {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                }
+
+                .shift-avatar {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                    background: linear-gradient(135deg, #8b4513 0%, #d2691e 100%);
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.5rem;
+                    font-weight: bold;
+                }
+
+                .shift-card-user h4 {
+                    margin: 0;
+                    font-size: 1.1rem;
+                    color: #1e293b;
+                }
+
+                .shift-card-user small {
+                    color: #64748b;
+                    font-size: 0.875rem;
+                }
+
+                .shift-card-stats {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 0.75rem;
+                    margin-bottom: 1rem;
+                }
+
+                .shift-stat {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 0.75rem;
+                    background: #f8f9fa;
+                    border-radius: 0.5rem;
+                }
+
+                .shift-stat i {
+                    font-size: 1.25rem;
+                    color: #8b4513;
+                }
+
+                .shift-stat small {
+                    display: block;
+                    color: #64748b;
+                    font-size: 0.75rem;
+                }
+
+                .shift-stat strong {
+                    display: block;
+                    color: #1e293b;
+                    font-size: 0.95rem;
+                }
+
+                .shift-card-actions {
+                    margin-top: 1rem;
+                }
+
+                .swal-shift-btn {
+                    width: 100%;
+                    padding: 0.75rem 1rem;
+                    border: none;
+                    border-radius: 0.5rem;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 0.5rem;
+                    transition: all 0.2s ease;
+                }
+
+                .swal-shift-btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+                }
+
+                .swal-shift-btn-success {
+                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                    color: white;
+                }
+
+                .swal-shift-btn-danger {
+                    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                    color: white;
+                }
+
+                .swal2-html-container {
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+            </style>
+            <div class="shift-cards-container">
+                ${cashiersHTML}
+            </div>
+        `,
+        width: '90%',
+        showConfirmButton: false,
+        showCloseButton: true,
+        customClass: {
+            popup: 'shift-management-popup',
+            closeButton: 'shift-close-btn'
+        },
+        didOpen: () => {
+            const closeBtn = document.querySelector('.shift-close-btn');
+            if (closeBtn) {
+                closeBtn.style.cssText = `
+                    color: #64748b;
+                    font-size: 1.5rem;
+                    transition: all 0.2s ease;
+                `;
+                closeBtn.addEventListener('mouseenter', () => {
+                    closeBtn.style.color = '#ef4444';
+                    closeBtn.style.transform = 'rotate(90deg)';
+                });
+                closeBtn.addEventListener('mouseleave', () => {
+                    closeBtn.style.color = '#64748b';
+                    closeBtn.style.transform = 'rotate(0deg)';
+                });
+            }
+        }
+    });
+}
+
+// بدء شيفت لكاشير
+async function startCashierShift(username, name) {
     if (currentUser.role !== 'admin') {
         Swal.fire({
             icon: 'error',
             title: 'غير مصرح',
-            text: 'فقط المدير يمكنه قفل الشيفت',
+            text: 'فقط المدير يمكنه إدارة الشيفتات',
             confirmButtonColor: '#ef4444'
         });
         return;
     }
 
     const result = await Swal.fire({
-        title: 'قفل الشيفت',
+        title: 'بدء شيفت جديد',
         html: `
             <div style="text-align: right;">
-                <p style="margin-bottom: 1rem;">هل أنت متأكد من قفل الشيفت؟</p>
+                <p style="margin-bottom: 1rem;">هل تريد بدء شيفت جديد للكاشير <strong>${name}</strong>؟</p>
+                <p style="color: #10b981; font-size: 0.9rem;">✓ سيتمكن الكاشير من تنفيذ الطلبات بعد بدء الشيفت</p>
+            </div>
+        `,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'نعم، ابدأ الشيفت',
+        cancelButtonText: 'إلغاء'
+    });
+
+    if (result.isConfirmed) {
+        const shifts = JSON.parse(localStorage.getItem('userShifts')) || {};
+        const now = new Date();
+
+        shifts[username] = {
+            active: true,
+            startTime: now.toISOString(),
+            startedBy: currentUser.name
+        };
+
+        localStorage.setItem('userShifts', JSON.stringify(shifts));
+
+        await Swal.fire({
+            icon: 'success',
+            title: 'تم بدء الشيفت',
+            text: `تم بدء شيفت جديد للكاشير ${name}`,
+            confirmButtonColor: '#10b981',
+            timer: 1500,
+            showConfirmButton: false
+        });
+
+        loadShiftManagement();
+    }
+}
+
+// إنهاء شيفت لكاشير
+async function endCashierShift(username, name) {
+    if (currentUser.role !== 'admin') {
+        Swal.fire({
+            icon: 'error',
+            title: 'غير مصرح',
+            text: 'فقط المدير يمكنه إدارة الشيفتات',
+            confirmButtonColor: '#ef4444'
+        });
+        return;
+    }
+
+    const shifts = JSON.parse(localStorage.getItem('userShifts')) || {};
+    const shift = shifts[username];
+
+    if (!shift || !shift.active) {
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'الشيفت غير نشط',
+            confirmButtonColor: '#ef4444'
+        });
+        return;
+    }
+
+    // حساب مبيعات الشيفت
+    const shiftSales = allSales.filter(s => {
+        const saleDate = new Date(s.completedAt || s.date);
+        const shiftStart = new Date(shift.startTime);
+        return s.cashier === name && saleDate >= shiftStart;
+    });
+
+    const totalSales = shiftSales.reduce((sum, s) => sum + s.total, 0);
+
+    const result = await Swal.fire({
+        title: 'إنهاء الشيفت',
+        html: `
+            <div style="text-align: right;">
+                <p style="margin-bottom: 1rem;">هل تريد إنهاء شيفت الكاشير <strong>${name}</strong>؟</p>
                 <div style="background: #f1f5f9; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
-                    <p style="margin: 0.5rem 0;"><strong>إجمالي المبيعات اليوم:</strong> ${document.getElementById('todaySales').textContent}</p>
-                    <p style="margin: 0.5rem 0;"><strong>عدد الطلبات:</strong> ${document.getElementById('todayOrders').textContent}</p>
+                    <p style="margin: 0.5rem 0;"><strong>وقت البدء:</strong> ${new Date(shift.startTime).toLocaleString('ar-SA')}</p>
+                    <p style="margin: 0.5rem 0;"><strong>إجمالي المبيعات:</strong> ${totalSales.toFixed(2)} ج.م</p>
+                    <p style="margin: 0.5rem 0;"><strong>عدد الطلبات:</strong> ${shiftSales.length}</p>
                 </div>
-                <p style="color: #ef4444; font-size: 0.9rem;">⚠️ بعد القفل، لن يتمكن أي كاشير من تنفيذ طلبات جديدة حتى فتح شيفت جديد</p>
+                <p style="color: #ef4444; font-size: 0.9rem;">⚠️ لن يتمكن الكاشير من تنفيذ طلبات جديدة حتى بدء شيفت جديد</p>
             </div>
         `,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ef4444',
         cancelButtonColor: '#64748b',
-        confirmButtonText: 'نعم، قفل الشيفت',
+        confirmButtonText: 'نعم، أنهِ الشيفت',
         cancelButtonText: 'إلغاء'
     });
 
     if (result.isConfirmed) {
         const now = new Date();
-        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const todaySales = allSales.filter(s => new Date(s.date) >= todayStart);
-        const totalSales = todaySales.reduce((sum, s) => sum + s.total, 0);
 
-        const closedShift = {
-            date: now.toISOString(),
-            dateStr: now.toLocaleDateString('ar-SA'),
-            timeStr: now.toLocaleTimeString('ar-SA'),
-            totalSales: totalSales,
-            totalOrders: todaySales.length,
-            closedBy: currentUser.name,
-            sales: todaySales
-        };
-
-        // حفظ الشيفت المقفل
+        // حفظ سجل الشيفت المغلق
         const closedShifts = JSON.parse(localStorage.getItem('closedShifts')) || [];
-        closedShifts.push(closedShift);
+        closedShifts.push({
+            username: username,
+            cashierName: name,
+            startTime: shift.startTime,
+            endTime: now.toISOString(),
+            totalSales: totalSales,
+            totalOrders: shiftSales.length,
+            closedBy: currentUser.name,
+            sales: shiftSales
+        });
         localStorage.setItem('closedShifts', JSON.stringify(closedShifts));
 
-        // تعيين حالة الشيفت كمقفل
-        localStorage.setItem('shiftClosed', 'true');
-        localStorage.setItem('lastShiftClose', now.toISOString());
+        // تحديث حالة الشيفت
+        shifts[username] = {
+            active: false,
+            lastEndTime: now.toISOString(),
+            endedBy: currentUser.name
+        };
+        localStorage.setItem('userShifts', JSON.stringify(shifts));
 
-        Swal.fire({
+        await Swal.fire({
             icon: 'success',
-            title: 'تم قفل الشيفت',
+            title: 'تم إنهاء الشيفت',
             html: `
                 <div style="text-align: center;">
-                    <p>تم قفل الشيفت بنجاح</p>
+                    <p>تم إنهاء شيفت الكاشير ${name} بنجاح</p>
                     <div style="background: #f1f5f9; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem;">
                         <p style="margin: 0.5rem 0;"><strong>إجمالي المبيعات:</strong> ${totalSales.toFixed(2)} ج.م</p>
-                        <p style="margin: 0.5rem 0;"><strong>عدد الطلبات:</strong> ${todaySales.length}</p>
+                        <p style="margin: 0.5rem 0;"><strong>عدد الطلبات:</strong> ${shiftSales.length}</p>
                     </div>
                 </div>
             `,
-            confirmButtonColor: '#10b981'
+            confirmButtonColor: '#10b981',
+            timer: 2000,
+            showConfirmButton: false
         });
+
+        loadShiftManagement();
     }
+}
+
+// فتح نافذة إدارة الشيفتات
+function openShiftManager() {
+    if (currentUser.role !== 'admin') {
+        Swal.fire({
+            icon: 'error',
+            title: 'غير مصرح',
+            text: 'فقط المدير يمكنه إدارة الشيفتات',
+            confirmButtonColor: '#ef4444'
+        });
+        return;
+    }
+
+    // فتح الـ popup مباشرة
+    loadShiftManagement();
 }
 
 // تحميل PDF

@@ -23,18 +23,35 @@ if (currentUser.role === 'cashier') {
     document.getElementById('discountBtn').style.display = 'none';
 }
 
-// التحقق من حالة الشيفت
-const shiftClosed = localStorage.getItem('shiftClosed') === 'true';
-if (shiftClosed && currentUser.role !== 'admin') {
-    Swal.fire({
-        icon: 'warning',
-        title: 'الشيفت مقفل',
-        text: 'تم قفل الشيفت من قبل المدير. لا يمكن تنفيذ طلبات جديدة حتى فتح شيفت جديد.',
-        confirmButtonColor: '#f59e0b',
-        allowOutsideClick: false
-    }).then(() => {
-        window.location.href = 'dashboard.html';
-    });
+// التحقق من حالة الشيفت (للكاشيرات فقط)
+if (currentUser.role === 'cashier' || currentUser.role === 'supervisor') {
+    const shifts = JSON.parse(localStorage.getItem('userShifts')) || {};
+    const userShift = shifts[currentUser.username];
+
+    if (!userShift || !userShift.active) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'الشيفت غير نشط',
+            html: `
+                <div style="text-align: center;">
+                    <p>شيفتك غير نشط حالياً</p>
+                    <p style="color: #64748b; font-size: 0.9rem; margin-top: 1rem;">
+                        يرجى التواصل مع المدير لبدء شيفت جديد
+                    </p>
+                </div>
+            `,
+            confirmButtonColor: '#f59e0b',
+            confirmButtonText: 'حسناً',
+            allowOutsideClick: false
+        }).then(() => {
+            window.location.href = 'login.html';
+        });
+    } else {
+        // عرض معلومات الشيفت
+        const shiftStart = new Date(userShift.startTime);
+        const shiftDuration = Math.floor((new Date() - shiftStart) / 1000 / 60); // بالدقائق
+        console.log(`✓ Shift active for ${currentUser.name} - Duration: ${shiftDuration} minutes`);
+    }
 }
 
 // نظام إدارة المنتجات مع Version Control

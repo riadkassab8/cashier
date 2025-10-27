@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة البيانات - نظام كاشير المقهى</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8b4513 0%, #d2691e 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #8b4513;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #e2e8f0;
+        }
+
+        .card h2 {
+            color: #8b4513;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #8b4513;
+            color: white;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-info {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-btn {
+            background: #64748b;
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-right"></i> العودة للوحة التحكم
+        </a>
+
+        <h1><i class="fas fa-database"></i> إدارة البيانات</h1>
+
+        <div class="card">
+            <h2><i class="fas fa-info-circle"></i> معلومات البيانات</h2>
+            <p>عرض تفاصيل البيانات المحفوظة في النظام</p>
+            <button class="btn btn-info" onclick="showDataInfo()">
+                <i class="fas fa-chart-bar"></i> عرض المعلومات
+            </button>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-download"></i> تصدير البيانات</h2>
+            <p>تحميل نسخة احتياطية من جميع البيانات (JSON)</p>
+            <button class="btn btn-success" onclick="exportData()">
+                <i class="fas fa-file-export"></i> تصدير البيانات
+            </button>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-upload"></i> استيراد البيانات</h2>
+            <p>استعادة البيانات من ملف نسخة احتياطية</p>
+            <button class="btn btn-warning" onclick="importData()">
+                <i class="fas fa-file-import"></i> استيراد البيانات
+            </button>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-history"></i> استعادة من النسخة الاحتياطية</h2>
+            <p>استعادة البيانات من آخر نسخة احتياطية تلقائية</p>
+            <button class="btn btn-primary" onclick="restoreFromBackup()">
+                <i class="fas fa-undo"></i> استعادة البيانات
+            </button>
+        </div>
+
+        <div class="card" style="background: #fef2f2; border-color: #fca5a5;">
+            <h2 style="color: #dc2626;"><i class="fas fa-exclamation-triangle"></i> تحذير</h2>
+            <p style="color: #991b1b;">
+                <strong>ملاحظة هامة:</strong> البيانات محفوظة في localStorage المتصفح.
+                لن تُمسح إلا إذا:
+            </p>
+            <ul style="color: #991b1b;">
+                <li>مسحت بيانات المتصفح يدوياً</li>
+                <li>استخدمت وضع التصفح الخفي (Incognito)</li>
+                <li>غيرت المتصفح أو الجهاز</li>
+            </ul>
+            <p style="color: #991b1b;">
+                <strong>نصيحة:</strong> قم بتصدير البيانات بشكل دوري للحفاظ عليها!
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="data-protection.js?v=1.0"></script>
+</body>
+
+</html>

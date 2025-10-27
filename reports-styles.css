@@ -4,6 +4,11 @@ body {
     height: auto !important;
 }
 
+:root {
+    --dark: #3e2723;
+
+}
+
 .reports-container {
     padding: 2rem;
     background: #f8f9fa;
@@ -12,7 +17,7 @@ body {
 }
 
 .reports-header {
-    background: linear-gradient(135deg, #8b4513 0%, #d2691e 100%);
+    background: var(--dark);
     color: white;
     padding: 2rem;
     border-radius: 1rem;
@@ -49,7 +54,9 @@ body {
 }
 
 .stat-card:hover {
+    border: 1px solid #8b4513;
     transform: translateY(-5px);
+
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
 }
 
@@ -261,4 +268,81 @@ body {
     .report-table td {
         padding: 0.5rem;
     }
+}
+
+/* Shift 
+Management Styles */
+#shiftManagementSection .report-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+#shiftManagementSection .report-table tbody tr:hover {
+    background: #f8f9fa;
+    transform: translateX(-2px);
+}
+
+#shiftManagementSection .badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+#shiftManagementSection .btn {
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+#shiftManagementSection .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+#shiftManagementSection .btn-primary {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+#shiftManagementSection .btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+#shiftManagementSection td {
+    vertical-align: middle;
+}
+
+#shiftManagementSection small {
+    display: block;
+    margin-top: 0.25rem;
+}
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Highlight animation for shift management section */
+@keyframes highlight {
+    0% {
+        background: transparent;
+    }
+
+    50% {
+        background: rgba(139, 69, 19, 0.1);
+    }
+
+    100% {
+        background: transparent;
+    }
+}
+
+#shiftManagementSection.highlight {
+    animation: highlight 1.5s ease;
 }
