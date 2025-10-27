@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الطباعة المزدوجة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .test-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .test-section h2 {
+            font-size: 20px;
+            color: #8b4513;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sample-data {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .sample-data h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-row:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .data-value {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .items-list {
+            margin-top: 15px;
+        }
+
+        .item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b4513 0%, #d2691e 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 69, 19, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .checklist {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .checklist h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .checklist-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checklist-item i {
+            color: #10b981;
+        }
+
+        .info-box {
+            background: #e0f2fe;
+            border-right: 4px solid #0284c7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .info-box p {
+            color: #0c4a6e;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .test-container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .btn {
+                font-size: 16px;
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1>🖨️ اختبار الطباعة المزدوجة</h1>
+            <p>اختبر نظام طباعة فاتورة الكاشير وطلب البار</p>
+        </div>
+
+        <div class="test-section">
+            <h2>
+                <i class="fas fa-database"></i>
+                بيانات الطلب التجريبية
+            </h2>
+
+            <div class="sample-data">
+                <h3>معلومات الطلب</h3>
+                <div class="data-row">
+                    <span class="data-label">رقم الطلب:</span>
+                    <span class="data-value">0001</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">الطاولة:</span>
+                    <span class="data-value">طاولة 5</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">الكاشير:</span>
+                    <span class="data-value">ندى</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">طريقة الدفع:</span>
+                    <span class="data-value">نقدي</span>
+                </div>
+
+                <div class="items-list">
+                    <h3 style="margin-top: 15px; margin-bottom: 10px;">الأصناف:</h3>
+                    <div class="item">
+                        <strong>× 2</strong> كابتشينو - 28.00 ج.م
+                        <div style="font-size: 12px; color: #666; margin-top: 5px;">📝 سكر وسط</div>
+                    </div>
+                    <div class="item">
+                        <strong>× 1</strong> كرواسون - 12.00 ج.م
+                    </div>
+                    <div class="item">
+                        <strong>× 1</strong> عصير برتقال - 15.00 ج.م
+                        <div style="font-size: 12px; color: #666; margin-top: 5px;">📝 بدون سكر - طازج</div>
+                    </div>
+                </div>
+
+                <div class="data-row" style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #8b4513;">
+                    <span class="data-label">الإجمالي:</span>
+                    <span class="data-value" style="color: #8b4513; font-size: 18px;">62.70 ج.م</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="testPrintReceipts()">
+                <i class="fas fa-print"></i>
+                طباعة الفواتير (كاشير + بار)
+            </button>
+
+            <button class="btn btn-secondary" onclick="testCashierOnly()">
+                <i class="fas fa-receipt"></i>
+                طباعة فاتورة الكاشير فقط
+            </button>
+
+            <button class="btn btn-success" onclick="testBarOnly()">
+                <i class="fas fa-cocktail"></i>
+                طباعة طلب البار فقط
+            </button>
+        </div>
+
+        <div class="test-section">
+            <h2>
+                <i class="fas fa-clipboard-check"></i>
+                قائمة الاختبار
+            </h2>
+
+            <div class="checklist">
+                <h3>تأكد من:</h3>
+                <div class="checklist-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>فاتورة الكاشير تحتوي على جميع التفاصيل والأسعار</span>
+                </div>
+                <div class="checklist-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>طلب البار يحتوي على الأصناف بدون أسعار</span>
+                </div>
+                <div class="checklist-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>الطباعة تتم بفاصل زمني 2 ثانية</span>
+                </div>
+                <div class="checklist-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>التنسيق مناسب للطباعة الحرارية 80mm</span>
+                </div>
+                <div class="checklist-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>الشعار يظهر بوضوح</span>
+                </div>
+                <div class="checklist-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>جميع البيانات تظهر بشكل صحيح</span>
+                </div>
+                <div class="checklist-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>رسائل التأكيد تعمل بشكل صحيح</span>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="print-receipts.js"></script>
+    <script>
+        // Sample order data for testing
+        const sampleOrder = {
+            orderNumber: '0001',
+            id: '0001',
+            tableName: 'طاولة 5',
+            cashier: 'ندى',
+            items: [
+                {
+                    name: 'كابتشينو',
+                    quantity: 2,
+                    price: 14.00,
+                    total: 28.00,
+                    options: 'سكر وسط'
+                },
+                {
+                    name: 'كرواسون',
+                    quantity: 1,
+                    price: 12.00,
+                    total: 12.00,
+                    options: null
+                },
+                {
+                    name: 'عصير برتقال',
+                    quantity: 1,
+                    price: 15.00,
+                    total: 15.00,
+                    options: 'بدون سكر - طازج'
+                }
+            ],
+            subtotal: 55.00,
+            tax: 7.70,
+            discount: 0,
+            total: 62.70,
+            paymentMethod: 'cash',
+            completedAt: new Date().toISOString(),
+            date: new Date().toISOString()
+        };
+
+        // Test both receipts
+        function testPrintReceipts() {
+            console.log('🧪 Testing dual receipt printing...');
+            printReceipts(sampleOrder);
+        }
+
+        // Test cashier receipt only
+        async function testCashierOnly() {
+            console.log('🧪 Testing cashier receipt only...');
+
+            Swal.fire({
+                title: 'جاري الطباعة...',
+                html: 'طباعة فاتورة الكاشير',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            const receiptData = prepareReceiptData(sampleOrder);
+            window.currentReceiptData = receiptData;
+
+            await printCashierReceipt(receiptData);
+
+            Swal.close();
+            Swal.fire({
+                icon: 'success',
+                title: 'تمت الطباعة!',
+                text: 'تم طباعة فاتورة الكاشير',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+        // Test bar receipt only
+        async function testBarOnly() {
+            console.log('🧪 Testing bar receipt only...');
+
+            Swal.fire({
+                title: 'جاري الطباعة...',
+                html: 'طباعة طلب البار',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            const receiptData = prepareReceiptData(sampleOrder);
+            window.currentReceiptData = receiptData;
+
+            await printBarReceipt(receiptData);
+
+            Swal.close();
+            Swal.fire({
+                icon: 'success',
+                title: 'تمت الطباعة!',
+                text: 'تم طباعة طلب البار',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+        console.log('✅ Test page loaded successfully');
+        console.log('📝 Sample order data:', sampleOrder);
+    </script>
+</body>
+
+</html>
