@@ -799,22 +799,22 @@ async function holdOrder() {
         return;
     }
 
-    // تأكيد التعليق
+    // تأكيد التعليق (ديليفري)
     const result = await Swal.fire({
-        title: 'تعليق الطلب',
+        title: 'تعليق الطلب (ديليفري)',
         html: `
             <div style="text-align: center;">
                 <p style="font-size: 1.1rem; margin-bottom: 1rem;">
-                    هل تريد تعليق طلب <strong>${currentOrder.tableName}</strong>؟
+                    هل تريد تعليق الطلب كـ <strong style="color: #f59e0b;">ديليفري</strong>؟
                 </p>
                 <p style="color: #64748b;">
-                    يمكنك العودة إليه لاحقاً من القائمة الجانبية
+                    سيتم تحرير الطاولة ويمكنك العودة للطلب لاحقاً
                 </p>
             </div>
         `,
         icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#64748b',
+        confirmButtonColor: '#f59e0b',
         cancelButtonColor: '#94a3b8',
         confirmButtonText: 'نعم، علق',
         cancelButtonText: 'إلغاء'
@@ -883,6 +883,110 @@ async function holdOrder() {
                 </p>
                 <p style="color: #64748b; font-size: 0.9rem;">
                     ${table ? `${table.name} أصبحت متاحة الآن` : 'يمكنك العودة للطلب من القائمة الجانبية'}
+                </p>
+            </div>
+        `,
+        timer: 2000,
+        showConfirmButton: false
+    });
+}
+
+// حفظ الطلب (للطاولات - تبقى مشغولة)
+async function saveOrder() {
+    if (currentOrder.items.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'تنبيه',
+            text: 'لا توجد منتجات لحفظها',
+            confirmButtonColor: '#f59e0b'
+        });
+        return;
+    }
+
+    // تأكيد الحفظ
+    const result = await Swal.fire({
+        title: 'حفظ الطلب',
+        html: `
+            <div style="text-align: center;">
+                <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                    هل تريد حفظ طلب <strong>${currentOrder.tableName}</strong>؟
+                </p>
+                <p style="color: #64748b;">
+                    الطاولة ستبقى مشغولة حتى إتمام الدفع
+                </p>
+            </div>
+        `,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#94a3b8',
+        confirmButtonText: '✓ نعم، احفظ',
+        cancelButtonText: 'إلغاء'
+    });
+
+    if (!result.isConfirmed) return;
+
+    currentOrder.status = 'hold';
+    openOrders.push({ ...currentOrder });
+    localStorage.setItem('openOrders', JSON.stringify(openOrders));
+
+    // إبقاء الطاولة مشغولة
+    const table = tables.find(t => t.id === currentOrder.tableId);
+    if (table) {
+        table.status = 'occupied'; // تبقى مشغولة
+        table.orderId = currentOrder.id;
+        localStorage.setItem('tables', JSON.stringify(tables));
+    }
+
+    // طلب جديد على طاولة أخرى
+    const availableTable = tables.find(t => t.status === 'available');
+    if (availableTable) {
+        currentOrder = {
+            id: Date.now(),
+            tableId: availableTable.id,
+            tableName: availableTable.name,
+            items: [],
+            subtotal: 0,
+            tax: 0,
+            discount: 0,
+            total: 0,
+            status: 'open',
+            createdAt: new Date().toISOString()
+        };
+        document.getElementById('currentTableName').textContent = availableTable.name;
+        document.getElementById('statusTableName').textContent = availableTable.name;
+    } else {
+        // إذا لم توجد طاولة متاحة، إنشاء طلب بدون طاولة
+        currentOrder = {
+            id: Date.now(),
+            tableId: null,
+            tableName: 'بدون طاولة',
+            items: [],
+            subtotal: 0,
+            tax: 0,
+            discount: 0,
+            total: 0,
+            status: 'open',
+            createdAt: new Date().toISOString()
+        };
+        document.getElementById('currentTableName').textContent = 'بدون طاولة';
+        document.getElementById('statusTableName').textContent = 'بدون طاولة';
+    }
+
+    generateOrderNumber();
+    updateCart();
+    loadOpenOrders();
+
+    Swal.fire({
+        icon: 'success',
+        title: 'تم الحفظ ✓',
+        html: `
+            <div style="text-align: center;">
+                <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">
+                    تم حفظ طلب <strong style="color: #10b981;">${table ? table.name : currentOrder.tableName}</strong>
+                </p>
+                <p style="color: #64748b; font-size: 0.9rem;">
+                    ${table ? `${table.name} لا تزال مشغولة` : 'يمكنك العودة للطلب من القائمة الجانبية'}
                 </p>
             </div>
         `,
