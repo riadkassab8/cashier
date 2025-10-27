@@ -799,13 +799,13 @@ async function holdOrder() {
         return;
     }
 
-    // تأكيد التعليق (ديليفري)
+    // تأكيد التعليق (تيك أواي)
     const result = await Swal.fire({
-        title: 'تعليق الطلب (ديليفري)',
+        title: 'تعليق الطلب (تيك أواي)',
         html: `
             <div style="text-align: center;">
                 <p style="font-size: 1.1rem; margin-bottom: 1rem;">
-                    هل تريد تعليق الطلب كـ <strong style="color: #f59e0b;">ديليفري</strong>؟
+                    هل تريد تعليق الطلب كـ <strong style="color: #f59e0b;">تيك أواي</strong>؟
                 </p>
                 <p style="color: #64748b;">
                     سيتم تحرير الطاولة ويمكنك العودة للطلب لاحقاً
@@ -826,7 +826,7 @@ async function holdOrder() {
     openOrders.push({ ...currentOrder });
     localStorage.setItem('openOrders', JSON.stringify(openOrders));
 
-    // تحرير الطاولة (لأن الطلب المعلق ديليفري)
+    // تحرير الطاولة (لأن الطلب المعلق تيك أواي)
     const table = tables.find(t => t.id === currentOrder.tableId);
     if (table) {
         table.status = 'available'; // تحرير الطاولة
@@ -879,7 +879,7 @@ async function holdOrder() {
         html: `
             <div style="text-align: center;">
                 <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">
-                    تم تعليق الطلب <strong style="color: #f59e0b;">(ديليفري)</strong>
+                    تم تعليق الطلب <strong style="color: #f59e0b;">(تيك أواي)</strong>
                 </p>
                 <p style="color: #64748b; font-size: 0.9rem;">
                     ${table ? `${table.name} أصبحت متاحة الآن` : 'يمكنك العودة للطلب من القائمة الجانبية'}
@@ -1925,7 +1925,23 @@ function closeChangeTableModal() {
 
 function loadChangeTableGrid() {
     const grid = document.getElementById('changeTableGrid');
-    const availableTables = tables.filter(t => t.status === 'available' || t.id === currentOrder.tableId);
+
+    if (!grid) {
+        console.error('changeTableGrid element not found!');
+        return;
+    }
+
+    // عرض الطاولات المتاحة فقط (بدون الطاولة الحالية)
+    const availableTables = tables.filter(t => t.status === 'available' && t.id !== currentOrder.tableId);
+
+    console.log('Current table ID:', currentOrder.tableId);
+    console.log('Available tables:', availableTables.length);
+    console.log('Tables:', availableTables.map(t => `${t.name} (${t.status})`));
+
+    if (availableTables.length === 0) {
+        grid.innerHTML = '<p style="text-align: center; color: #64748b; padding: 2rem;">لا توجد طاولات متاحة للنقل</p>';
+        return;
+    }
 
     grid.innerHTML = availableTables.map(table => `
         <div class="table-card available" onclick="moveToTable(${table.id})">
@@ -1939,6 +1955,23 @@ function loadChangeTableGrid() {
 async function moveToTable(newTableId) {
     const oldTable = tables.find(t => t.id === currentOrder.tableId);
     const newTable = tables.find(t => t.id === newTableId);
+
+    if (!oldTable || !newTable) {
+        console.error('Table not found:', { oldTable, newTable });
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'لم يتم العثور على الطاولة',
+            confirmButtonColor: '#ef4444'
+        });
+        return;
+    }
+
+    // إذا كانت نفس الطاولة، لا تفعل شيء
+    if (oldTable.id === newTable.id) {
+        closeChangeTableModal();
+        return;
+    }
 
     // تأكيد النقل
     const result = await Swal.fire({
@@ -1962,10 +1995,8 @@ async function moveToTable(newTableId) {
     if (!result.isConfirmed) return;
 
     // تحرير الطاولة القديمة
-    if (oldTable) {
-        oldTable.status = 'available';
-        oldTable.orderId = null;
-    }
+    oldTable.status = 'available';
+    oldTable.orderId = null;
 
     // حجز الطاولة الجديدة
     currentOrder.tableId = newTable.id;
@@ -1973,7 +2004,18 @@ async function moveToTable(newTableId) {
     newTable.status = 'occupied';
     newTable.orderId = currentOrder.id;
 
+    // تحديث الطلب في القائمة المفتوحة إذا كان موجوداً
+    const orderIndex = openOrders.findIndex(o => o.id === currentOrder.id);
+    if (orderIndex !== -1) {
+        openOrders[orderIndex].tableId = newTable.id;
+        openOrders[orderIndex].tableName = newTable.name;
+        localStorage.setItem('openOrders', JSON.stringify(openOrders));
+        console.log('✓ Updated saved order table:', newTable.name);
+    }
+
     localStorage.setItem('tables', JSON.stringify(tables));
+    saveCurrentOrder();
+    loadOpenOrders(); // تحديث قائمة الطلبات المعلقة
 
     document.getElementById('currentTableName').textContent = newTable.name;
     document.getElementById('statusTableName').textContent = newTable.name;
