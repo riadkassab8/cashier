@@ -78,10 +78,15 @@ function calculateStats() {
         sum + sale.items.reduce((itemSum, item) => itemSum + item.quantity, 0), 0
     );
 
+    // حساب عدد الكاشيرات النشطة
+    const shifts = JSON.parse(localStorage.getItem('userShifts')) || {};
+    const activeCashiers = Object.values(shifts).filter(shift => shift.active === true).length;
+
     // تحديث الإحصائيات
     document.getElementById('todaySales').textContent = `${totalSales.toFixed(2)} ج.م`;
     document.getElementById('todayInvoices').textContent = totalInvoices;
     document.getElementById('productsSold').textContent = totalProducts;
+    document.getElementById('activeUsers').textContent = activeCashiers;
 
     // حساب المنتجات الأكثر مبيعاً
     const productSales = {};
