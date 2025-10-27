@@ -462,6 +462,7 @@ body.pos-page {
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
+    position: relative;
 }
 
 .cart-header h3 {
@@ -478,6 +479,33 @@ body.pos-page {
     font-weight: bold;
 }
 
+.mobile-close-cart {
+    display: none;
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ef4444;
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.mobile-close-cart:hover {
+    background: #dc2626;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.mobile-close-cart:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
 .cart-items {
     flex: 1;
     overflow-y: auto;
@@ -487,22 +515,42 @@ body.pos-page {
 
 .empty-cart {
     text-align: center;
-    padding: 2rem 1rem;
+    padding: 3rem 1.5rem;
     color: #94a3b8;
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-radius: 0.5rem;
-    border: 2px dashed #cbd5e1;
+    border-radius: 1rem;
+    border: 3px dashed #cbd5e1;
+    margin: 1rem;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
 }
 
 .empty-cart i {
-    font-size: 3.5rem;
-    margin-bottom: 0.75rem;
+    font-size: 5rem;
     color: #cbd5e1;
+    animation: float 3s ease-in-out infinite;
 }
 
 .empty-cart p {
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-weight: 600;
+    color: #64748b;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 .cart-item {
@@ -1302,6 +1350,10 @@ body.pos-page {
         font-size: 0.85rem;
     }
 
+    .fa-file-chart-line {
+        height: 100%;
+    }
+
     .mobile-cart-btn {
         margin-bottom: 60px;
     }
@@ -1563,6 +1615,12 @@ body.pos-page {
 
 @media (max-width: 1024px) {
     .mobile-cart-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mobile-close-cart {
         display: flex;
         align-items: center;
         justify-content: center;
