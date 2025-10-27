@@ -172,6 +172,24 @@ let currentOrder = {
 let currentCategory = 'all';
 let numpadValue = '';
 
+// حفظ الطلب الحالي في localStorage
+function saveCurrentOrder() {
+    localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+}
+
+// تحميل الطلب الحالي من localStorage
+function loadCurrentOrder() {
+    const savedOrder = localStorage.getItem('currentOrder');
+    if (savedOrder) {
+        try {
+            currentOrder = JSON.parse(savedOrder);
+            updateCart();
+        } catch (e) {
+            console.error('Error loading current order:', e);
+        }
+    }
+}
+
 // توليد رقم طلب جديد
 function generateOrderNumber() {
     const sales = JSON.parse(localStorage.getItem('salesData')) || [];
@@ -453,15 +471,39 @@ function confirmProductOptions() {
     updateCart();
     saveCurrentOrder();
 
-    // Close modal immediately
+    // Close modal with smooth animation
     const modal = document.getElementById('productOptionsModal');
-    if (modal) {
-        modal.style.display = 'none';
-        modal.style.visibility = 'hidden';
+    const modalContent = modal?.querySelector('.modal-content');
+
+    if (modal && modalContent) {
+        // Add fade out animation
+        modalContent.style.animation = 'slideOut 0.3s ease';
+        modal.style.opacity = '0';
+
+        setTimeout(() => {
+            modal.style.display = 'none';
+            modal.style.visibility = 'hidden';
+            modal.style.opacity = '1';
+            modalContent.style.animation = '';
+        }, 300);
     }
+
     selectedProductForOptions = null;
 
-    console.log('Product added and modal closed');
+    // Show success toast
+    Swal.fire({
+        icon: 'success',
+        title: 'تمت الإضافة ✓',
+        text: `${product.name}`,
+        timer: 1200,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end',
+        background: '#10b981',
+        color: '#fff'
+    });
+
+    console.log('✅ Product added and modal closed');
 }
 
 // إضافة إلى السلة
@@ -2247,4 +2289,5 @@ fixProductIcons();
 generateOrderNumber();
 loadProducts();
 loadOpenOrders();
+loadCurrentOrder();
 updateCart();
