@@ -295,6 +295,7 @@
         // Force reload scripts without cache
         const timestamp = new Date().getTime();
         document.write('<script src="auth.js?v=' + timestamp + '"><\/script>');
+        document.write('<script src="print-receipts.js?v=' + timestamp + '"><\/script>');
         document.write('<script src="pos.js?v=' + timestamp + '"><\/script>');
     </script>
     <script>

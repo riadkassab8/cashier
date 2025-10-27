@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>طلب البار</title>
+    <link rel="stylesheet" href="print-receipt.css">
+    <style>
+        /* Additional inline styles for bar receipt */
+        @page {
+            size: 80mm auto;
+            margin: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Courier New", "Arial", monospace;
+            width: 80mm;
+            margin: 0 auto;
+            padding: 5mm;
+            font-size: 14px;
+            direction: rtl;
+            background: white;
+            color: #000;
+        }
+
+        .receipt-container {
+            width: 100%;
+        }
+
+        /* Logo */
+        .logo {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .logo img {
+            max-width: 50mm;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Bar Label */
+        .bar-label {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+            padding: 8px;
+            border: 3px solid #000;
+            background: #f0f0f0;
+            letter-spacing: 2px;
+        }
+
+        /* Divider */
+        .divider {
+            border-top: 2px dashed #000;
+            margin: 10px 0;
+        }
+
+        .divider-solid {
+            border-top: 3px solid #000;
+            margin: 10px 0;
+        }
+
+        /* Order Number - Large */
+        .order-number-large {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            border: 2px solid #000;
+            background: #fff;
+        }
+
+        /* Table Number - Large */
+        .table-number-large {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 15px;
+            border: 3px solid #000;
+            background: #f8f8f8;
+            letter-spacing: 2px;
+        }
+
+        /* Items List */
+        .items-list {
+            margin: 15px 0;
+        }
+
+        .bar-item {
+            margin: 12px 0;
+            padding: 10px;
+            border-bottom: 2px dotted #666;
+        }
+
+        .bar-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .item-qty {
+            font-size: 24px;
+            font-weight: bold;
+            min-width: 50px;
+            text-align: center;
+            background: #000;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .item-name {
+            font-size: 18px;
+            font-weight: bold;
+            flex: 1;
+        }
+
+        .item-notes {
+            font-size: 14px;
+            color: #333;
+            margin-top: 8px;
+            padding: 8px;
+            background: #f9f9f9;
+            border-right: 3px solid #666;
+            font-style: italic;
+        }
+
+        .item-notes::before {
+            content: "📝 ";
+            font-size: 16px;
+        }
+
+        /* Bar Footer */
+        .bar-footer {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 2px solid #000;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .bar-footer div {
+            margin: 5px 0;
+        }
+
+        .bar-footer .cashier {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .bar-footer .datetime {
+            color: #666;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+
+            .receipt-container {
+                page-break-after: always;
+            }
+
+            @page {
+                margin: 0;
+            }
+        }
+
+        /* Cut Line */
+        .cut-line {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .cut-line::before,
+        .cut-line::after {
+            content: "✂";
+            margin: 0 15px;
+            font-size: 16px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="receipt-container">
+        <!-- Logo -->
+        <div class="logo">
+            <!-- Placeholder for logo - will be replaced with actual logo -->
+            <svg width="120" height="60" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                <rect width="120" height="60" fill="#8b4513" rx="5" />
+                <text x="60" y="25" font-family="Arial" font-size="16" font-weight="bold" fill="white"
+                    text-anchor="middle">مقهى</text>
+                <text x="60" y="45" font-family="Arial" font-size="14" fill="white" text-anchor="middle">الأصالة</text>
+            </svg>
+        </div>
+
+        <!-- Bar Label -->
+        <div class="bar-label">
+            🍹 نسخة البار 🍹
+            <br />
+            BAR ORDER
+        </div>
+
+        <div class="divider-solid"></div>
+
+        <!-- Order Number -->
+        <div class="order-number-large">طلب #<span id="orderNumber">0001</span></div>
+
+        <!-- Table Number -->
+        <div class="table-number-large">🪑 طاولة <span id="tableName">1</span></div>
+
+        <div class="divider-solid"></div>
+
+        <!-- Items List -->
+        <div class="items-list" id="itemsList">
+            <!-- Sample items - will be replaced with actual data -->
+            <div class="bar-item">
+                <div class="item-header">
+                    <div class="item-qty">× 2</div>
+                    <div class="item-name">كابتشينو</div>
+                </div>
+                <div class="item-notes">سكر وسط</div>
+            </div>
+
+            <div class="bar-item">
+                <div class="item-header">
+                    <div class="item-qty">× 1</div>
+                    <div class="item-name">كرواسون</div>
+                </div>
+            </div>
+
+            <div class="bar-item">
+                <div class="item-header">
+                    <div class="item-qty">× 1</div>
+                    <div class="item-name">عصير برتقال</div>
+                </div>
+                <div class="item-notes">بدون سكر - طازج</div>
+            </div>
+        </div>
+
+        <div class="divider-solid"></div>
+
+        <!-- Footer -->
+        <div class="bar-footer">
+            <div class="cashier">الكاشير: <span id="cashierName">ahmed</span></div>
+            <div class="datetime"><span id="orderTime">02:30 م</span> - <span id="orderDate">2024/01/15</span></div>
+        </div>
+
+        <!-- Cut Line -->
+        <div class="cut-line">قص هنا</div>
+    </div>
+
+    <script>
+        // This script will be used to populate data from the parent window
+        // Data will be passed when opening this window for printing
+
+        window.addEventListener("DOMContentLoaded", function () {
+            // Check if data is passed from parent window
+            if (window.opener && window.opener.currentReceiptData) {
+                populateBarReceiptData(window.opener.currentReceiptData);
+            }
+        });
+
+        function populateBarReceiptData(data) {
+            // Order Info
+            if (data.orderNumber) {
+                document.getElementById("orderNumber").textContent = data.orderNumber;
+            }
+            if (data.tableName) {
+                document.getElementById("tableName").textContent = data.tableName;
+            }
+            if (data.date) {
+                document.getElementById("orderDate").textContent = data.date;
+            }
+            if (data.time) {
+                document.getElementById("orderTime").textContent = data.time;
+            }
+
+            // Cashier
+            if (data.cashier) {
+                document.getElementById("cashierName").textContent = data.cashier;
+            }
+
+            // Items (NO PRICES - Bar order only)
+            if (data.items && data.items.length > 0) {
+                const itemsList = document.getElementById("itemsList");
+                itemsList.innerHTML = "";
+
+                data.items.forEach((item) => {
+                    const itemDiv = document.createElement("div");
+                    itemDiv.className = "bar-item";
+
+                    let itemHTML = `
+                        <div class="item-header">
+                            <div class="item-qty">× ${item.quantity}</div>
+                            <div class="item-name">${item.name}</div>
+                        </div>
+                    `;
+
+                    // Add notes/options if exists
+                    if (item.options) {
+                        itemHTML += `
+                            <div class="item-notes">${item.options}</div>
+                        `;
+                    }
+
+                    itemDiv.innerHTML = itemHTML;
+                    itemsList.appendChild(itemDiv);
+                });
+            } else {
+                // Empty state
+                const itemsList = document.getElementById("itemsList");
+                itemsList.innerHTML = '<div class="empty-state">لا توجد أصناف</div>';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فاتورة الكاشير</title>
+    <link rel="stylesheet" href="print-receipt.css">
+    <style>
+        /* Additional inline styles for cashier receipt */
+        @page {
+            size: 80mm auto;
+            margin: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', 'Arial', monospace;
+            width: 80mm;
+            margin: 0 auto;
+            padding: 5mm;
+            font-size: 12px;
+            direction: rtl;
+            background: white;
+            color: #000;
+        }
+
+        .receipt-container {
+            width: 100%;
+        }
+
+        /* Logo */
+        .logo {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .logo img {
+            max-width: 50mm;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Shop Name */
+        .shop-name {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        /* Divider */
+        .divider {
+            border-top: 1px dashed #000;
+            margin: 8px 0;
+        }
+
+        .divider-solid {
+            border-top: 2px solid #000;
+            margin: 8px 0;
+        }
+
+        /* Order Info */
+        .order-info {
+            margin: 8px 0;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 4px 0;
+            font-size: 11px;
+        }
+
+        .info-row span:first-child {
+            font-weight: normal;
+        }
+
+        .info-row span:last-child {
+            font-weight: bold;
+        }
+
+        /* Items Table */
+        .items-table {
+            width: 100%;
+            margin: 8px 0;
+            border-collapse: collapse;
+        }
+
+        .items-table thead {
+            border-bottom: 1px solid #000;
+        }
+
+        .items-table th {
+            padding: 4px 2px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .items-table td {
+            padding: 4px 2px;
+            text-align: center;
+            font-size: 11px;
+            border-bottom: 1px dotted #ccc;
+        }
+
+        .items-table td:first-child {
+            text-align: right;
+            width: 50%;
+        }
+
+        .items-table td:nth-child(2) {
+            text-align: center;
+            width: 20%;
+        }
+
+        .items-table td:last-child {
+            text-align: left;
+            width: 30%;
+        }
+
+        .item-options {
+            font-size: 9px;
+            color: #666;
+            padding-right: 8px;
+            font-style: italic;
+        }
+
+        /* Totals */
+        .totals {
+            margin: 8px 0;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 4px 0;
+            font-size: 11px;
+        }
+
+        .total-row.grand-total {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 2px solid #000;
+        }
+
+        /* Payment Method */
+        .payment-method {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 12px;
+        }
+
+        .payment-method span:last-child {
+            font-weight: bold;
+        }
+
+        /* Cashier Name */
+        .cashier-name {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 11px;
+            font-style: italic;
+        }
+
+        .cashier-name span {
+            font-weight: bold;
+        }
+
+        /* Thank You */
+        .thank-you {
+            text-align: center;
+            margin: 12px 0;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 9px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+
+            .receipt-container {
+                page-break-after: always;
+            }
+
+            /* Hide any browser print headers/footers */
+            @page {
+                margin: 0;
+            }
+        }
+
+        /* Spacing for cutting */
+        .cut-line {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 10px;
+            color: #999;
+        }
+
+        .cut-line::before,
+        .cut-line::after {
+            content: "✂";
+            margin: 0 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="receipt-container">
+        <!-- Logo -->
+        <div class="logo">
+            <!-- Placeholder for logo - will be replaced with actual logo -->
+            <svg width="120" height="60" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                <rect width="120" height="60" fill="#8b4513" rx="5" />
+                <text x="60" y="25" font-family="Arial" font-size="16" font-weight="bold" fill="white"
+                    text-anchor="middle">مقهى</text>
+                <text x="60" y="45" font-family="Arial" font-size="14" fill="white" text-anchor="middle">الأصالة</text>
+            </svg>
+        </div>
+
+        <!-- Shop Name -->
+        <div class="shop-name">مقهى الأصالة</div>
+
+        <div class="divider"></div>
+
+        <!-- Order Info -->
+        <div class="order-info">
+            <div class="info-row">
+                <span>رقم الطلب:</span>
+                <span id="orderNumber">0001</span>
+            </div>
+            <div class="info-row">
+                <span>الطاولة:</span>
+                <span id="tableName">طاولة 1</span>
+            </div>
+            <div class="info-row">
+                <span>التاريخ:</span>
+                <span id="orderDate">2024/01/15</span>
+            </div>
+            <div class="info-row">
+                <span>الوقت:</span>
+                <span id="orderTime">02:30 م</span>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Items Table -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>الصنف</th>
+                    <th>الكمية</th>
+                    <th>السعر</th>
+                </tr>
+            </thead>
+            <tbody id="itemsBody">
+                <!-- Sample items - will be replaced with actual data -->
+                <tr>
+                    <td>كابتشينو</td>
+                    <td>2</td>
+                    <td>28.00 ج.م</td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="item-options">سكر وسط</td>
+                </tr>
+                <tr>
+                    <td>كرواسون</td>
+                    <td>1</td>
+                    <td>12.00 ج.م</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="divider"></div>
+
+        <!-- Totals -->
+        <div class="totals">
+            <div class="total-row">
+                <span>الإجمالي الفرعي:</span>
+                <span id="subtotal">40.00 ج.م</span>
+            </div>
+            <div class="total-row">
+                <span>الضريبة (14%):</span>
+                <span id="tax">5.60 ج.م</span>
+            </div>
+            <div class="total-row" id="discountRow" style="display: none;">
+                <span>الخصم:</span>
+                <span id="discount">0.00 ج.م</span>
+            </div>
+            <div class="total-row grand-total">
+                <span>الإجمالي النهائي:</span>
+                <span id="total">45.60 ج.م</span>
+            </div>
+        </div>
+
+        <div class="divider-solid"></div>
+
+        <!-- Payment Method -->
+        <div class="payment-method">
+            <span>طريقة الدفع:</span>
+            <span id="paymentMethod">نقدي</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Cashier Name -->
+        <div class="cashier-name">
+            تم بواسطة: <span id="cashierName">ahmed</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Thank You Message -->
+        <div class="thank-you">
+            شكراً لزيارتكم
+            <br>
+            Thank you for your visit
+            <br>
+            نتمنى رؤيتكم قريباً
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            مقهى الأصالة - شارع الجامعة، القاهرة
+            <br>
+            هاتف: 01234567890
+            <br>
+            www.asala-cafe.com
+        </div>
+
+        <!-- Cut Line -->
+        <div class="cut-line">قص هنا</div>
+    </div>
+
+    <script>
+        // This script will be used to populate data from the parent window
+        // Data will be passed when opening this window for printing
+
+        window.addEventListener('DOMContentLoaded', function () {
+            // Check if data is passed from parent window
+            if (window.opener && window.opener.currentReceiptData) {
+                populateReceiptData(window.opener.currentReceiptData);
+            }
+        });
+
+        function populateReceiptData(data) {
+            // Order Info
+            if (data.orderNumber) {
+                document.getElementById('orderNumber').textContent = data.orderNumber;
+            }
+            if (data.tableName) {
+                document.getElementById('tableName').textContent = data.tableName;
+            }
+            if (data.date) {
+                document.getElementById('orderDate').textContent = data.date;
+            }
+            if (data.time) {
+                document.getElementById('orderTime').textContent = data.time;
+            }
+
+            // Cashier
+            if (data.cashier) {
+                document.getElementById('cashierName').textContent = data.cashier;
+            }
+
+            // Payment Method
+            if (data.paymentMethod) {
+                document.getElementById('paymentMethod').textContent = data.paymentMethod;
+            }
+
+            // Items
+            if (data.items && data.items.length > 0) {
+                const itemsBody = document.getElementById('itemsBody');
+                itemsBody.innerHTML = '';
+
+                data.items.forEach(item => {
+                    // Item row
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.total.toFixed(2)} ج.م</td>
+                    `;
+                    itemsBody.appendChild(row);
+
+                    // Options row (if exists)
+                    if (item.options) {
+                        const optionsRow = document.createElement('tr');
+                        optionsRow.innerHTML = `
+                            <td colspan="3" class="item-options">${item.options}</td>
+                        `;
+                        itemsBody.appendChild(optionsRow);
+                    }
+                });
+            }
+
+            // Totals
+            if (data.subtotal !== undefined) {
+                document.getElementById('subtotal').textContent = data.subtotal.toFixed(2) + ' ج.م';
+            }
+            if (data.tax !== undefined) {
+                document.getElementById('tax').textContent = data.tax.toFixed(2) + ' ج.م';
+            }
+            if (data.discount && data.discount > 0) {
+                document.getElementById('discountRow').style.display = 'flex';
+                document.getElementById('discount').textContent = '-' + data.discount.toFixed(2) + ' ج.م';
+            }
+            if (data.total !== undefined) {
+                document.getElementById('total').textContent = data.total.toFixed(2) + ' ج.م';
+            }
+        }
+    </script>
+</body>
+
+</html>

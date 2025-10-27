@@ -74,14 +74,14 @@ function getDefaultProducts() {
         // مشروبات باردة
         { id: 11, name: 'قهوة مثلجة', price: 13.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=200&h=200&fit=crop', stock: 100 },
         { id: 12, name: 'لاتيه مثلج', price: 17.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=200&h=200&fit=crop', stock: 100 },
-        { id: 13, name: 'موكا مثلج', price: 18.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1578374173705-0a5c2c1e8b72?w=200&h=200&fit=crop', stock: 100 },
+        { id: 13, name: 'موكا مثلج', price: 18.00, category: 'cold-drinks', image: 'https://media.istockphoto.com/id/1488305360/photo/homemade-ice-cream-float-with-cola-sweet-refreshment-drink-side-view-close-up.webp?a=1&b=1&s=612x612&w=0&k=20&c=rKF31exIXGePPxK9QJCMn0hILLEqVd3bqR7f7hdR9LU=', stock: 100 },
         { id: 14, name: 'أمريكانو مثلج', price: 12.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=200&h=200&fit=crop', stock: 100 },
         { id: 15, name: 'كولد برو', price: 15.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=200&h=200&fit=crop', stock: 80 },
         { id: 16, name: 'فرابتشينو', price: 20.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=200&h=200&fit=crop', stock: 80 },
         { id: 17, name: 'سموذي', price: 21.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1505252585461-04db1eb84625?w=200&h=200&fit=crop', stock: 60 },
         { id: 18, name: 'عصير طازج', price: 16.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=200&h=200&fit=crop', stock: 50 },
         { id: 19, name: 'شاي مثلج', price: 10.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=200&h=200&fit=crop', stock: 80 },
-        { id: 20, name: 'ليموناضة', price: 11.00, category: 'cold-drinks', image: 'https://images.unsplash.com/photo-1523677011781-c91d1bbe2f9d?w=200&h=200&fit=crop', stock: 70 },
+        { id: 20, name: 'ليموناضة', price: 11.00, category: 'cold-drinks', image: 'https://media.istockphoto.com/id/613751712/photo/lemon-jelly-with-mousse-on-white-tray.jpg?s=2048x2048&w=is&k=20&c=GDNsy4qoR8HNJebr2CV0cz5L-ZSYtn8WDwujEwG1lS0=', stock: 70 },
 
         // معجنات
         { id: 21, name: 'كرواسون', price: 12.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=200&h=200&fit=crop', stock: 40 },
@@ -91,7 +91,7 @@ function getDefaultProducts() {
         { id: 25, name: 'سينابون', price: 15.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200&h=200&fit=crop', stock: 25 },
         { id: 26, name: 'دونات', price: 9.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&h=200&fit=crop', stock: 40 },
         { id: 27, name: 'بيجل', price: 8.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=200&h=200&fit=crop', stock: 35 },
-        { id: 28, name: 'سكون', price: 10.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1612182062631-e5c8c1a7e1f7?w=200&h=200&fit=crop', stock: 30 },
+        { id: 28, name: 'بلو بيري كيك', price: 10.00, category: 'pastries', image: 'https://media.istockphoto.com/id/1031317416/photo/cake-with-blue-cream-and-berries-on-concrete-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=GU43vlD8iu00DaJIdP7ErRVcHlHcN-ZabzVqUG84tKM=', stock: 30 },
         { id: 29, name: 'معجنات دنماركية', price: 13.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1509365465985-25d11c17e812?w=200&h=200&fit=crop', stock: 25 },
         { id: 30, name: 'براوني', price: 12.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=200&h=200&fit=crop', stock: 30 },
 
@@ -108,16 +108,16 @@ function getDefaultProducts() {
         { id: 40, name: 'بروتين بار', price: 12.00, category: 'snacks', image: 'https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?w=200&h=200&fit=crop', stock: 30 },
 
         // شيشة
-        { id: 41, name: 'لاي طبي', price: 50.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 30 },
-        { id: 42, name: 'معسل', price: 45.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 30 },
-        { id: 43, name: 'معسل دبل', price: 55.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 25 },
-        { id: 44, name: 'زغلول', price: 40.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 30 },
-        { id: 45, name: 'اسيلز ليمون', price: 48.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 25 },
-        { id: 46, name: 'منت نعناع', price: 45.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 30 },
-        { id: 47, name: 'ثلج شيشه', price: 50.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 20 },
-        { id: 48, name: 'لاي فاخر', price: 60.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 20 },
-        { id: 49, name: 'فاخر مزايا', price: 65.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 15 },
-        { id: 50, name: 'فواكه خاص', price: 55.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1580870069867-74c57ee1bb07?w=200&h=200&fit=crop', stock: 20 }
+        { id: 41, name: 'لاي طبي', price: 50.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1574238752695-675b86d49267?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170', stock: 30 },
+        { id: 42, name: 'معسل', price: 45.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1685345729575-7f059204c0cd?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHNoaXNoYXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=500', stock: 30 },
+        { id: 43, name: 'معسل دبل', price: 55.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1662468527222-e4edb1cda938?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHNoaXNoYXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=500', stock: 25 },
+        { id: 44, name: 'زغلول', price: 40.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1702889369889-2b467b5d1aaf?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687', stock: 30 },
+        { id: 45, name: 'اسيلز ليمون', price: 48.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1587740851725-3d3e64e9f19e?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fHNoaXNoYXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=500', stock: 25 },
+        { id: 46, name: 'منت نعناع', price: 45.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1689579634260-08dc3c65efdd?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687', stock: 30 },
+        { id: 47, name: 'ثلج شيشه', price: 50.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1562581146-d7000f1318d4?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=797', stock: 20 },
+        { id: 48, name: 'لاي فاخر', price: 60.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1697018636636-2687e6c441a2?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687', stock: 20 },
+        { id: 49, name: 'فاخر مزايا', price: 65.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1695890391045-2d77184c940d?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687', stock: 15 },
+        { id: 50, name: 'فواكه خاص', price: 55.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1681219577911-1fcb5a4e353e?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NzN8fHNoaXNoYXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=500', stock: 20 }
     ];
 }
 
@@ -2027,8 +2027,19 @@ async function logout() {
     }
 }
 
-// طباعة الفاتورة
+// طباعة الفاتورة - Dual Receipt Printing System
 function printReceipt(sale) {
+    // Use the new dual receipt printing system
+    // This will print both Cashier Receipt and Bar Receipt automatically
+
+    console.log('🖨️ Printing receipts for order:', sale.id);
+
+    // Call the new printReceipts function from print-receipts.js
+    printReceipts(sale);
+}
+
+// Legacy print function (kept for reference - can be removed later)
+function printReceiptOld(sale) {
     const itemsHTML = sale.items.map(item => `
         <tr>
             <td style="padding: 0.5rem; border-bottom: 1px solid #e2e8f0;">${item.name}</td>
