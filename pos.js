@@ -1435,6 +1435,9 @@ function completePayment(method, received) {
         createdAt: new Date().toISOString()
     };
 
+    // مسح الطلب الحالي من localStorage
+    localStorage.removeItem('currentOrder');
+
     // تحديث الواجهة
     document.getElementById('currentTableName').textContent = 'طاولة 1';
     document.getElementById('statusTableName').textContent = 'طاولة 1';
