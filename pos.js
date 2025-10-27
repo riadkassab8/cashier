@@ -7,9 +7,15 @@ if (!currentUser) {
 // عرض اسم الكاشير
 document.getElementById('cashierName').textContent = currentUser.name;
 
-// إظهار زر لوحة التحكم للمدير والمشرف
+// إظهار الأزرار حسب الصلاحيات
 if (currentUser.role === 'admin' || currentUser.role === 'supervisor') {
     document.getElementById('dashboardBtn').style.display = 'flex';
+    document.getElementById('reportsBtn').style.display = 'flex';
+}
+
+// زر قفل الشيفت للمدير فقط
+if (currentUser.role === 'admin') {
+    document.getElementById('closeShiftBtn').style.display = 'flex';
 }
 
 // إخفاء زر الخصم للكاشير
@@ -17,8 +23,22 @@ if (currentUser.role === 'cashier') {
     document.getElementById('discountBtn').style.display = 'none';
 }
 
+// التحقق من حالة الشيفت
+const shiftClosed = localStorage.getItem('shiftClosed') === 'true';
+if (shiftClosed && currentUser.role !== 'admin') {
+    Swal.fire({
+        icon: 'warning',
+        title: 'الشيفت مقفل',
+        text: 'تم قفل الشيفت من قبل المدير. لا يمكن تنفيذ طلبات جديدة حتى فتح شيفت جديد.',
+        confirmButtonColor: '#f59e0b',
+        allowOutsideClick: false
+    }).then(() => {
+        window.location.href = 'dashboard.html';
+    });
+}
+
 // نظام إدارة المنتجات مع Version Control
-const PRODUCTS_VERSION = '2.2'; // غير هذا الرقم عند تحديث المنتجات
+const PRODUCTS_VERSION = '2.4'; // غير هذا الرقم عند تحديث المنتجات
 
 function getDefaultProducts() {
     return [

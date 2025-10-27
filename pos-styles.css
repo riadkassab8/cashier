@@ -21,6 +21,10 @@
 body {
     font-family: 'Segoe UI', 'Cairo', Tahoma, sans-serif;
     background: var(--light);
+}
+
+/* POS page specific styles */
+body.pos-page {
     overflow: hidden;
     width: 100vw;
     height: 100vh;

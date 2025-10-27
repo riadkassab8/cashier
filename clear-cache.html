@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>مسح الذاكرة المؤقتة</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #8b4513 0%, #d2691e 100%);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #8b4513;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        button {
+            background: #8b4513;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        button:hover {
+            background: #a0522d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .success {
+            color: #10b981;
+            font-weight: bold;
+            display: none;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="icon">🔄</div>
+        <h1>مسح الذاكرة المؤقتة</h1>
+        <p>
+            اضغط على الزر أدناه لمسح الذاكرة المؤقتة وإعادة تحميل النظام بالتحديثات الجديدة.
+        </p>
+        <button onclick="clearAndReload()">
+            🗑️ مسح وإعادة التحميل
+        </button>
+        <button onclick="window.location.href='reports.html'" style="background: #64748b;">
+            📊 الذهاب للتقارير مباشرة
+        </button>
+        <p class="success" id="successMsg">✓ تم المسح! جاري إعادة التحميل...</p>
+    </div>
+
+    <script>
+        function clearAndReload() {
+            // مسح الذاكرة المؤقتة
+            if ('caches' in window) {
+                caches.keys().then(function (names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+
+            // إظهار رسالة النجاح
+            document.getElementById('successMsg').style.display = 'block';
+
+            // إعادة التحميل بعد ثانية
+            setTimeout(() => {
+                window.location.href = 'reports.html?v=' + new Date().getTime();
+            }, 1000);
+        }
+
+        // عرض معلومات مفيدة
+        window.onload = function () {
+            console.log('🔧 Cache Clearing Tool');
+            console.log('📊 Current localStorage data:');
+            console.log('- Sales:', (JSON.parse(localStorage.getItem('salesData')) || []).length);
+            console.log('- Users:', (JSON.parse(localStorage.getItem('users')) || []).length);
+            console.log('- Products:', (JSON.parse(localStorage.getItem('products')) || []).length);
+        };
+    </script>
+</body>
+
+</html>

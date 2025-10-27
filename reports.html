@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقارير والإحصائيات - نظام كاشير المقهى</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="reports-styles.css?v=2.4.2">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body>
+    <div class="reports-container">
+        <!-- Header -->
+        <div class="reports-header">
+            <div>
+                <h1><i class="fas fa-chart-line"></i> التقارير والإحصائيات</h1>
+                <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">مرحباً، <span id="userName"></span> (<span
+                        id="userRole"></span>)</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="window.location.href='pos.html'">
+                    <i class="fas fa-arrow-right"></i> العودة للكاشير
+                </button>
+                <button class="btn btn-danger" id="closeShiftBtn" style="display: none;" onclick="closeShift()">
+                    <i class="fas fa-lock"></i> قفل الشيفت
+                </button>
+                <button class="btn btn-primary" id="downloadPdfBtn" style="display: none;"
+                    onclick="downloadSimplePDF()">
+                    <i class="fas fa-download"></i> تحميل PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card today">
+                <div class="icon"><i class="fas fa-calendar-day"></i></div>
+                <h3>مبيعات اليوم</h3>
+                <div class="value" id="todaySales">0.00 ج.م</div>
+            </div>
+            <div class="stat-card week">
+                <div class="icon"><i class="fas fa-calendar-week"></i></div>
+                <h3>مبيعات الأسبوع</h3>
+                <div class="value" id="weekSales">0.00 ج.م</div>
+            </div>
+            <div class="stat-card month">
+                <div class="icon"><i class="fas fa-calendar-alt"></i></div>
+                <h3>مبيعات الشهر</h3>
+                <div class="value" id="monthSales">0.00 ج.م</div>
+            </div>
+            <div class="stat-card orders">
+                <div class="icon"><i class="fas fa-shopping-cart"></i></div>
+                <h3>عدد الطلبات اليوم</h3>
+                <div class="value" id="todayOrders">0</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="report-section">
+            <h2><i class="fas fa-filter"></i> تصفية التقارير</h2>
+            <div class="filters">
+                <div class="filter-group">
+                    <label>من تاريخ</label>
+                    <input type="date" id="dateFrom">
+                </div>
+                <div class="filter-group">
+                    <label>إلى تاريخ</label>
+                    <input type="date" id="dateTo">
+                </div>
+                <div class="filter-group">
+                    <label>الكاشير</label>
+                    <select id="cashierFilter">
+                        <option value="all">الكل</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>طريقة الدفع</label>
+                    <select id="paymentFilter">
+                        <option value="all">الكل</option>
+                        <option value="cash">نقدي</option>
+                        <option value="card">بطاقة</option>
+                        <option value="wallet">محفظة إلكترونية</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-primary" onclick="applyFilters()">
+                        <i class="fas fa-search"></i> بحث
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Sales Table -->
+        <div class="report-section" id="reportContent">
+            <h2><i class="fas fa-receipt"></i> جدول المبيعات اليومية</h2>
+            <div style="overflow-x: auto;">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>رقم الطلب</th>
+                            <th>الكاشير</th>
+                            <th>الطاولة</th>
+                            <th>المجموع</th>
+                            <th>طريقة الدفع</th>
+                            <th>التاريخ</th>
+                            <th>الوقت</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salesTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Cashier Performance -->
+        <div class="report-section">
+            <h2><i class="fas fa-users"></i> أداء الكاشيرز</h2>
+            <div style="overflow-x: auto;">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>اسم الكاشير</th>
+                            <th>عدد الطلبات</th>
+                            <th>إجمالي المبيعات</th>
+                            <th>متوسط الطلب</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cashierPerformanceBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Top Products Chart -->
+        <div class="report-section">
+            <h2><i class="fas fa-chart-bar"></i> المنتجات الأكثر مبيعاً</h2>
+            <div class="chart-container">
+                <canvas id="topProductsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Payment Methods Chart -->
+        <div class="report-section">
+            <h2><i class="fas fa-credit-card"></i> توزيع طرق الدفع</h2>
+            <div class="chart-container">
+                <canvas id="paymentMethodsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Profit Report (Admin Only) -->
+        <div class="report-section" id="profitSection" style="display: none;">
+            <h2><i class="fas fa-dollar-sign"></i> تقرير الأرباح</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>إجمالي الإيرادات</h3>
+                    <div class="value" id="totalRevenue">0.00 ج.م</div>
+                </div>
+                <div class="stat-card">
+                    <h3>التكاليف المقدرة</h3>
+                    <div class="value" id="totalCosts">0.00 ج.م</div>
+                </div>
+                <div class="stat-card">
+                    <h3>صافي الربح</h3>
+                    <div class="value" id="netProfit" style="color: #10b981;">0.00 ج.م</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="pdf-helper.js?v=1.0"></script>
+    <script src="auth.js?v=2.4.4"></script>
+    <script src="reports.js?v=2.4.4"></script>
+</body>
+
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فتح شيفت جديد</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #8b4513 0%, #d2691e 100%);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #8b4513;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        button {
+            background: #8b4513;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        button:hover {
+            background: #a0522d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #8b4513;
+        }
+
+        .info-box {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            text-align: right;
+        }
+
+        .info-box p {
+            margin: 0.5rem 0;
+            color: #475569;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="icon">🔓</div>
+        <h1>فتح شيفت جديد</h1>
+        <div class="info-box" id="shiftInfo">
+            <p><strong>الشيفت مقفل حالياً</strong></p>
+            <p id="lastCloseInfo"></p>
+        </div>
+        <p>
+            اضغط على الزر أدناه لفتح شيفت جديد.<br>
+            سيتمكن جميع الكاشيرز من العمل بعد فتح الشيفت.
+        </p>
+        <button onclick="openNewShift()">
+            <i class="fas fa-unlock"></i> فتح شيفت جديد
+        </button>
+        <button onclick="window.location.href='pos.html'" style="background: #64748b;">
+            <i class="fas fa-arrow-right"></i> العودة
+        </button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // التحقق من الصلاحيات
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser || currentUser.role !== 'admin') {
+            Swal.fire({
+                icon: 'error',
+                title: 'غير مصرح',
+                text: 'فقط المدير يمكنه فتح شيفت جديد',
+                confirmButtonColor: '#ef4444'
+            }).then(() => {
+                window.location.href = 'login.html';
+            });
+        }
+
+        // عرض معلومات آخر إغلاق
+        const lastClose = localStorage.getItem('lastShiftClose');
+        if (lastClose) {
+            const closeDate = new Date(lastClose);
+            document.getElementById('lastCloseInfo').textContent =
+                `آخر إغلاق: ${closeDate.toLocaleString('ar-SA')}`;
+        }
+
+        function openNewShift() {
+            Swal.fire({
+                title: 'فتح شيفت جديد',
+                text: 'هل أنت متأكد من فتح شيفت جديد؟',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'نعم، افتح الشيفت',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // فتح الشيفت
+                    localStorage.removeItem('shiftClosed');
+                    localStorage.setItem('shiftOpenedAt', new Date().toISOString());
+                    localStorage.setItem('shiftOpenedBy', currentUser.name);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'تم فتح الشيفت',
+                        text: 'يمكن للكاشيرز الآن العمل',
+                        confirmButtonColor: '#10b981'
+                    }).then(() => {
+                        window.location.href = 'pos.html';
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

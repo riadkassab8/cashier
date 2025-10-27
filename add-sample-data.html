@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة بيانات تجريبية</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #8b4513 0%, #d2691e 100%);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #8b4513;
+            margin-bottom: 1rem;
+        }
+
+        button {
+            background: #8b4513;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        button:hover {
+            background: #a0522d;
+        }
+
+        .info {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎲 إضافة بيانات تجريبية</h1>
+        <div class="info">
+            <p><strong>سيتم إضافة:</strong></p>
+            <p>✅ 20 طلب مبيعات</p>
+            <p>✅ تواريخ متنوعة (اليوم، الأسبوع، الشهر)</p>
+            <p>✅ طرق دفع مختلفة</p>
+            <p>✅ منتجات متنوعة</p>
+        </div>
+        <button onclick="addSampleData()">
+            ➕ إضافة البيانات التجريبية
+        </button>
+        <button onclick="window.location.href='reports.html'" style="background: #64748b;">
+            📊 الذهاب للتقارير
+        </button>
+    </div>
+
+    <script>
+        function addSampleData() {
+            const now = new Date();
+            const sampleSales = [];
+
+            const products = [
+                { name: 'إسبريسو', price: 9.00 },
+                { name: 'كابتشينو', price: 14.00 },
+                { name: 'لاتيه', price: 16.00 },
+                { name: 'موكا', price: 17.00 },
+                { name: 'أمريكانو', price: 11.00 },
+                { name: 'قهوة مثلجة', price: 13.00 },
+                { name: 'كرواسون', price: 12.00 },
+                { name: 'مافن', price: 11.00 }
+            ];
+
+            const cashiers = ['أحمد المدير', 'محمد', 'فاطمة', 'عبدالله'];
+            const paymentMethods = ['cash', 'card', 'wallet'];
+
+            // إنشاء 20 طلب
+            for (let i = 0; i < 20; i++) {
+                const daysAgo = Math.floor(Math.random() * 30); // آخر 30 يوم
+                const saleDate = new Date(now);
+                saleDate.setDate(saleDate.getDate() - daysAgo);
+                saleDate.setHours(Math.floor(Math.random() * 12) + 8); // من 8 صباحاً إلى 8 مساءً
+                saleDate.setMinutes(Math.floor(Math.random() * 60));
+
+                const numItems = Math.floor(Math.random() * 3) + 1; // 1-3 منتجات
+                const items = [];
+                let total = 0;
+
+                for (let j = 0; j < numItems; j++) {
+                    const product = products[Math.floor(Math.random() * products.length)];
+                    const quantity = Math.floor(Math.random() * 2) + 1;
+                    items.push({
+                        id: j + 1,
+                        name: product.name,
+                        price: product.price,
+                        quantity: quantity
+                    });
+                    total += product.price * quantity;
+                }
+
+                const tax = total * 0.10;
+                const grandTotal = total + tax;
+
+                sampleSales.push({
+                    id: Date.now() + i,
+                    orderNumber: String(i + 1).padStart(4, '0'),
+                    cashier: cashiers[Math.floor(Math.random() * cashiers.length)],
+                    tableName: `طاولة ${Math.floor(Math.random() * 10) + 1}`,
+                    items: items,
+                    subtotal: total,
+                    tax: tax,
+                    discount: 0,
+                    total: grandTotal,
+                    paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
+                    date: saleDate.toISOString(),
+                    completedAt: saleDate.toISOString(),
+                    createdAt: saleDate.toISOString()
+                });
+            }
+
+            // حفظ البيانات
+            const existingSales = JSON.parse(localStorage.getItem('salesData')) || [];
+            const allSales = [...existingSales, ...sampleSales];
+            localStorage.setItem('salesData', JSON.stringify(allSales));
+
+            alert(`✅ تم إضافة ${sampleSales.length} طلب تجريبي!\n\nإجمالي الطلبات: ${allSales.length}`);
+
+            // الذهاب للتقارير
+            window.location.href = 'reports.html?v=' + new Date().getTime();
+        }
+    </script>
+</body>
+
+</html>
