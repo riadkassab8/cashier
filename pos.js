@@ -10,12 +10,6 @@ document.getElementById('cashierName').textContent = currentUser.name;
 // إظهار الأزرار حسب الصلاحيات
 if (currentUser.role === 'admin' || currentUser.role === 'supervisor') {
     document.getElementById('dashboardBtn').style.display = 'flex';
-    document.getElementById('reportsBtn').style.display = 'flex';
-}
-
-// زر قفل الشيفت للمدير فقط
-if (currentUser.role === 'admin') {
-    document.getElementById('closeShiftBtn').style.display = 'flex';
 }
 
 // إخفاء زر الخصم للكاشير
@@ -205,6 +199,31 @@ if (savedVersion !== PRODUCTS_VERSION || !savedProducts || savedProducts.length 
 // الطاولات
 let tables = JSON.parse(localStorage.getItem('tables')) || initializeTables();
 
+// إضافة الطاولات المميزة إذا لم تكن موجودة
+if (!tables.find(t => t.id === 101)) {
+    tables.unshift({
+        id: 101,
+        name: 'النيابة',
+        status: 'available',
+        orderId: null,
+        capacity: 8,
+        isSpecial: true,
+        specialType: 'vip'
+    });
+}
+if (!tables.find(t => t.id === 102)) {
+    tables.splice(1, 0, {
+        id: 102,
+        name: 'الدكاترة',
+        status: 'available',
+        orderId: null,
+        capacity: 8,
+        isSpecial: true,
+        specialType: 'vip'
+    });
+}
+localStorage.setItem('tables', JSON.stringify(tables));
+
 // الطلبات المفتوحة
 let openOrders = JSON.parse(localStorage.getItem('openOrders')) || [];
 
@@ -212,11 +231,13 @@ let openOrders = JSON.parse(localStorage.getItem('openOrders')) || [];
 // التحقق من وجود طاولة مختارة من صفحة الطاولات
 const selectedTableId = localStorage.getItem('selectedTableId');
 const tableAction = localStorage.getItem('tableAction');
-let initialTableId = 1;
-let initialTableName = 'طاولة 1';
 
 // تحميل الطلب الحالي من localStorage
 let savedOrder = JSON.parse(localStorage.getItem('currentOrder'));
+
+// استخدام الطاولة من الطلب المحفوظ أو الافتراضية
+let initialTableId = savedOrder?.tableId || 1;
+let initialTableName = savedOrder?.tableName || 'طاولة 1';
 
 if (selectedTableId) {
     const selectedTable = tables.find(t => t.id === parseInt(selectedTableId));
@@ -371,11 +392,34 @@ function generateOrderNumber() {
 // تهيئة الطاولات
 function initializeTables() {
     const tables = [];
+
+    // طاولات خاصة مميزة
+    tables.push({
+        id: 101,
+        name: 'النيابة',
+        status: 'available',
+        orderId: null,
+        capacity: 8,
+        isSpecial: true,
+        specialType: 'vip'
+    });
+
+    tables.push({
+        id: 102,
+        name: 'الدكاترة',
+        status: 'available',
+        orderId: null,
+        capacity: 8,
+        isSpecial: true,
+        specialType: 'vip'
+    });
+
+    // الطاولات العادية
     for (let i = 1; i <= 100; i++) {
         tables.push({
             id: i,
             name: `طاولة ${i}`,
-            status: 'available', // available, occupied, reserved
+            status: 'available',
             orderId: null,
             capacity: i <= 30 ? 4 : i <= 70 ? 6 : 8
         });

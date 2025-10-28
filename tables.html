@@ -153,6 +153,34 @@
             color: white;
         }
 
+        /* طاولات VIP مميزة */
+        .table-card.special-vip {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+            border: 3px solid #ff6b00;
+            font-weight: 900;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.5);
+            min-height: 80px;
+            aspect-ratio: auto;
+        }
+
+        .table-card.special-vip:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 16px rgba(255, 215, 0, 0.7);
+        }
+
+        .table-card.special-vip.occupied {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            border-color: #7f1d1d;
+        }
+
+        .table-card.special-vip .table-name {
+            font-size: 1.2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
         .table-card i {
             display: none;
         }
@@ -252,6 +280,32 @@
             console.log('Initializing tables...');
             tables = initializeTables();
         }
+
+        // إضافة الطاولات المميزة إذا لم تكن موجودة
+        if (!tables.find(t => t.id === 101)) {
+            tables.unshift({
+                id: 101,
+                name: 'النيابة',
+                status: 'available',
+                orderId: null,
+                capacity: 8,
+                isSpecial: true,
+                specialType: 'vip'
+            });
+        }
+        if (!tables.find(t => t.id === 102)) {
+            tables.splice(1, 0, {
+                id: 102,
+                name: 'الدكاترة',
+                status: 'available',
+                orderId: null,
+                capacity: 8,
+                isSpecial: true,
+                specialType: 'vip'
+            });
+        }
+        localStorage.setItem('tables', JSON.stringify(tables));
+
         console.log('Tables loaded:', tables.length);
 
         function loadTables() {
@@ -270,7 +324,7 @@
             }
 
             grid.innerHTML = tables.map(table => `
-                <div class="table-card ${table.status}" onclick="selectTable(${table.id})">
+                <div class="table-card ${table.status} ${table.isSpecial ? 'special-' + table.specialType : ''}" onclick="selectTable(${table.id})">
                     <i class="fas fa-chair"></i>
                     <div class="table-name">${table.name}</div>
                     <div class="table-status">${statusText[table.status]}</div>
