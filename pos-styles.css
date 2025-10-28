@@ -40,22 +40,33 @@ body.pos-page {
 .pos-header {
     background: var(--dark);
     color: white;
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     z-index: 100;
 }
 
 .header-main {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    position: relative;
+}
+
+.header-main .mobile-menu-btn {
+    position: absolute;
+    left: 0;
+}
+
+.header-main .header-time {
+    position: absolute;
+    right: 0;
 }
 
 .header-menu {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 0.5rem;
+    margin-top: 0.25rem;
 }
 
 .mobile-menu-btn {
@@ -80,32 +91,32 @@ body.pos-page {
 .logo {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 1.2rem;
+    gap: 0.4rem;
+    font-size: 1rem;
     font-weight: bold;
 }
 
 .logo i {
     color: var(--coffee);
-    font-size: 1.5rem;
+    font-size: 1.2rem;
 }
 
 .header-time {
     color: #94a3b8;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .header-btn {
     background: rgba(255, 255, 255, 0.1);
     border: none;
     color: white;
-    padding: 0.6rem 1.2rem;
-    border-radius: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 0.4rem;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.95rem;
+    gap: 0.4rem;
+    font-size: 0.85rem;
     transition: all 0.3s;
     white-space: nowrap;
 }
@@ -125,15 +136,15 @@ body.pos-page {
 .cashier-info {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
+    gap: 0.4rem;
+    font-size: 0.85rem;
 }
 
 /* Main Content */
 .pos-main {
     flex: 1;
     display: grid;
-    grid-template-columns: 280px 1fr 400px;
+    grid-template-columns: 220px 1fr 320px;
     gap: 0;
     overflow: hidden;
     min-height: 0;
@@ -148,15 +159,15 @@ body.pos-page {
 }
 
 .sidebar-header {
-    padding: 1rem;
-    border-bottom: 2px solid var(--border);
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .sidebar-header h3 {
-    font-size: 1rem;
+    font-size: 0.85rem;
     color: var(--dark);
 }
 
@@ -164,10 +175,10 @@ body.pos-page {
     background: var(--success);
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 0.4rem;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     transition: all 0.3s;
 }
 
@@ -178,15 +189,15 @@ body.pos-page {
 .orders-list {
     flex: 1;
     overflow-y: auto;
-    padding: 0.5rem;
+    padding: 0.4rem;
 }
 
 .order-item {
     background: var(--light);
-    border: 2px solid var(--border);
-    border-radius: 0.5rem;
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 0.4rem;
+    padding: 0.5rem;
+    margin-bottom: 0.4rem;
     cursor: pointer;
     transition: all 0.3s;
 }
@@ -226,22 +237,22 @@ body.pos-page {
     background: white;
     padding: 1rem 1.25rem;
     display: flex;
-    gap: 0.75rem;
-    border-bottom: 2px solid var(--border);
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
     overflow-x: auto;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .category-tab {
-    padding: 0.85rem 1.75rem;
-    border: 2px solid var(--border);
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
     background: white;
-    border-radius: 0.75rem;
+    border-radius: 0.5rem;
     cursor: pointer;
     font-weight: 600;
     white-space: nowrap;
     transition: all 0.3s;
-    font-size: 0.95rem;
+    font-size: 0.8rem;
 }
 
 .category-tab:hover {
@@ -302,36 +313,36 @@ body.pos-page {
 
 .products-grid {
     flex: 1;
-    padding: 1.25rem;
+    padding: 0.8rem;
     display: grid;
     grid-template-columns: repeat(8, 1fr);
-    gap: 1rem;
+    gap: 0.6rem;
     overflow-y: auto;
     align-content: start;
 }
 
 .product-card {
     background: white;
-    border: 2px solid var(--border);
-    border-radius: 1rem;
-    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    padding: 0.6rem;
     cursor: pointer;
     transition: all 0.3s;
     text-align: center;
     position: relative;
-    min-height: 210px;
+    min-height: 140px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     overflow: hidden;
 }
 
 .product-card:hover {
     border-color: var(--coffee);
-    transform: translateY(-5px);
-    box-shadow: 10px 12px 0px rgba(139, 69, 19, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(139, 69, 19, 0.15);
     background: linear-gradient(135deg, #ffffff 0%, #fdf6e3 100%);
 }
 
@@ -365,30 +376,30 @@ body.pos-page {
 }
 
 .product-image i {
-    font-size: 3rem;
+    font-size: 2rem;
     color: var(--coffee);
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .product-name {
     font-weight: 600;
     color: var(--dark);
-    font-size: 1rem;
-    min-height: 2.4em;
-    max-height: 2.4em;
+    font-size: 0.8rem;
+    min-height: 2em;
+    max-height: 2em;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     word-wrap: break-word;
-    line-height: 1.2;
+    line-height: 1;
 }
 
 .product-price {
     color: var(--coffee);
     font-weight: bold;
-    font-size: 1.15rem;
+    font-size: 0.9rem;
     background: linear-gradient(135deg, #8b4513 0%, #d2691e 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -456,26 +467,34 @@ body.pos-page {
 }
 
 .cart-header {
-    padding: 0.75rem;
-    border-bottom: 2px solid var(--border);
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
     position: relative;
+    gap: 0.5rem;
 }
 
 .cart-header h3 {
-    font-size: 1rem;
+    font-size: 0.75rem;
     color: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.cart-header h3 i {
+    font-size: 0.85rem;
 }
 
 .order-number {
     background: var(--coffee);
     color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 1rem;
-    font-size: 0.85rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.8rem;
+    font-size: 0.7rem;
     font-weight: bold;
 }
 
@@ -556,52 +575,55 @@ body.pos-page {
 .cart-item {
     background: var(--light);
     border: 1px solid var(--border);
-    border-radius: 0.5rem;
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
+    border-radius: 0.4rem;
+    padding: 0.5rem;
+    margin-bottom: 0.4rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .cart-item-info h4 {
-    font-size: 0.95rem;
-    margin-bottom: 0.25rem;
+    font-size: 0.8rem;
+    margin-bottom: 0.2rem;
 }
 
 .cart-item-info p {
-    font-size: 0.85rem;
+    font-size: 0.7rem;
     color: #64748b;
 }
 
 .cart-item-controls {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
 }
 
 .qty-btn {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     border: none;
     background: var(--coffee);
     color: white;
     border-radius: 0.25rem;
     cursor: pointer;
     font-weight: bold;
+    font-size: 0.75rem;
 }
 
 .qty-display {
-    min-width: 30px;
+    min-width: 25px;
     text-align: center;
     font-weight: bold;
+    font-size: 0.8rem;
 }
 
 .item-total {
     font-weight: bold;
     color: var(--success);
-    min-width: 60px;
+    min-width: 50px;
     text-align: left;
+    font-size: 0.8rem;
 }
 
 .remove-btn {
@@ -616,16 +638,16 @@ body.pos-page {
 
 .cart-summary {
     flex-shrink: 0;
-    padding: 0.75rem;
-    border-top: 2px solid var(--border);
-    border-bottom: 2px solid var(--border);
+    padding: 0.5rem 0.6rem;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
 }
 
 .summary-row {
     display: flex;
     justify-content: space-between;
-    padding: 0.4rem 0;
-    font-size: 0.9rem;
+    padding: 0.3rem 0;
+    font-size: 0.75rem;
 }
 
 .discount-row {
@@ -633,39 +655,43 @@ body.pos-page {
 }
 
 .total-row {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     font-weight: bold;
-    border-top: 2px solid var(--border);
-    padding-top: 0.5rem;
-    margin-top: 0.5rem;
+    border-top: 1px solid var(--border);
+    padding-top: 0.4rem;
+    margin-top: 0.3rem;
 }
 
 .total-amount {
     color: var(--coffee);
-    font-size: 1.3rem;
+    font-size: 1rem;
     font-weight: 900;
 }
 
 .cart-actions {
     flex-shrink: 0;
-    padding: 0.5rem;
+    padding: 0.4rem;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
+    gap: 0.4rem;
 }
 
 .action-btn {
-    padding: 0.6rem;
+    padding: 0.4rem;
     border: none;
-    border-radius: 0.5rem;
+    border-radius: 0.4rem;
     cursor: pointer;
     font-weight: 600;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
-    font-size: 0.8rem;
+    gap: 0.15rem;
+    font-size: 0.65rem;
     transition: all 0.3s;
+}
+
+.action-btn i {
+    font-size: 0.9rem;
 }
 
 .btn-discount {
@@ -690,6 +716,22 @@ body.pos-page {
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     color: white;
     border: 2px solid #d97706;
+}
+
+.btn-table-change {
+    background: #403f3f;
+    color: #fff;
+    border: 2px solid #6d3410;
+}
+
+.btn-table-select {
+    background: #6d3410;
+    color: #fff;
+    border: 2px solid #8b4513;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
 }
 
 .action-btn:hover {
@@ -965,42 +1007,43 @@ body.pos-page {
 
 .table-card {
     background: white;
-    border: 3px solid var(--border);
-    border-radius: 1rem;
-    padding: 1.75rem 1.5rem;
+    border: none;
+    border-radius: 0.4rem;
+    padding: 0.5rem;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
     position: relative;
-    min-height: 140px;
+    min-height: 60px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    aspect-ratio: 1;
 }
 
 .table-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .table-card.available {
-    border-color: var(--success);
+    background: #06b6d4;
+    color: white;
 }
 
 .table-card.occupied {
-    border-color: var(--danger);
-    background: #fef2f2;
+    background: #dc2626;
+    color: white;
 }
 
 .table-card.reserved {
-    border-color: var(--warning);
-    background: #fffbeb;
+    background: #f59e0b;
+    color: white;
 }
 
 .table-card i {
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
+    display: none;
 }
 
 .table-card.available i {
@@ -1017,26 +1060,24 @@ body.pos-page {
 
 .table-name {
     font-weight: bold;
-    font-size: 1.1rem;
-    margin-bottom: 0.25rem;
+    font-size: 1rem;
+    margin-bottom: 0.1rem;
 }
 
 .table-status {
-    font-size: 0.85rem;
-    color: #64748b;
+    font-size: 0.65rem;
+    opacity: 0.9;
 }
 
 .table-info {
-    font-size: 0.8rem;
-    color: #94a3b8;
-    margin-top: 0.5rem;
+    display: none;
 }
 
 .change-table-grid {
-    padding: 1.5rem;
+    padding: 1rem;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 0.5rem;
 }
 
 @keyframes slideDown {

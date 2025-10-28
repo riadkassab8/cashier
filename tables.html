@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الطاولات - نظام كاشير المقهى</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Cairo', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #8b4513;
+            font-size: 28px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back {
+            background: #64748b;
+            color: white;
+        }
+
+        .btn-back:hover {
+            background: #475569;
+            transform: translateY(-2px);
+        }
+
+        .legend {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            border: 2px solid #333;
+        }
+
+        .legend-color.available {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .legend-color.occupied {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .legend-color.reserved {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .tables-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 8px;
+        }
+
+        .table-card {
+            background: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            aspect-ratio: 1;
+            min-height: 60px;
+        }
+
+        .table-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .table-card.available {
+            background: #06b6d4;
+            color: white;
+        }
+
+        .table-card.occupied {
+            background: #dc2626;
+            color: white;
+        }
+
+        .table-card.reserved {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .table-card i {
+            display: none;
+        }
+
+        .table-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .table-status {
+            font-size: 10px;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .tables-grid {
+                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+                gap: 6px;
+            }
+
+            .table-card {
+                padding: 6px;
+                min-height: 50px;
+            }
+
+            .table-card i {
+                display: none;
+            }
+
+            .table-name {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1><i class="fas fa-chair"></i> الطاولات (100)</h1>
+        <div class="header-buttons">
+            <button class="btn btn-back" onclick="goBack()">
+                <i class="fas fa-arrow-right"></i>
+                رجوع
+            </button>
+        </div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color available"></div>
+            <span>متاحة</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color occupied"></div>
+            <span>مشغولة</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color reserved"></div>
+            <span>محجوزة</span>
+        </div>
+    </div>
+
+    <div class="tables-container">
+        <div class="tables-grid" id="tablesGrid">
+            <!-- Tables will be loaded here -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // التحقق من تسجيل الدخول
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) {
+            window.location.href = 'login.html';
+        }
+
+        // تهيئة الطاولات إذا لم تكن موجودة
+        function initializeTables() {
+            const tables = [];
+            for (let i = 1; i <= 100; i++) {
+                tables.push({
+                    id: i,
+                    name: `طاولة ${i}`,
+                    status: 'available',
+                    orderId: null,
+                    capacity: i <= 30 ? 4 : i <= 70 ? 6 : 8
+                });
+            }
+            localStorage.setItem('tables', JSON.stringify(tables));
+            return tables;
+        }
+
+        // تحميل الطاولات
+        let tables = JSON.parse(localStorage.getItem('tables'));
+        if (!tables || tables.length === 0) {
+            console.log('Initializing tables...');
+            tables = initializeTables();
+        }
+        console.log('Tables loaded:', tables.length);
+
+        function loadTables() {
+            const grid = document.getElementById('tablesGrid');
+            console.log('Loading tables into grid...', tables.length);
+
+            const statusText = {
+                'available': 'متاحة',
+                'occupied': 'مشغولة',
+                'reserved': 'محجوزة'
+            };
+
+            if (!grid) {
+                console.error('Grid element not found!');
+                return;
+            }
+
+            grid.innerHTML = tables.map(table => `
+                <div class="table-card ${table.status}" onclick="selectTable(${table.id})">
+                    <i class="fas fa-chair"></i>
+                    <div class="table-name">${table.name}</div>
+                    <div class="table-status">${statusText[table.status]}</div>
+                </div>
+            `).join('');
+
+            console.log('Tables rendered:', grid.children.length);
+        }
+
+        async function selectTable(tableId) {
+            const table = tables.find(t => t.id === tableId);
+
+            // التحقق من وجود طلب حالي في POS
+            const currentOrder = JSON.parse(localStorage.getItem('currentOrder'));
+            const tableAction = localStorage.getItem('tableAction');
+            const isTransferMode = (tableAction === 'transfer');
+            const isSelectMode = (tableAction === 'select');
+
+            if (table.status === 'occupied') {
+                const result = await Swal.fire({
+                    title: `${table.name} مشغولة`,
+                    html: `
+                        <div style="text-align: center; padding: 1rem;">
+                            <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                                هذه الطاولة عليها طلب حالياً
+                            </p>
+                            <p style="color: #64748b;">
+                                ${isTransferMode ? 'لا يمكن نقل الطلب إلى طاولة مشغولة' : 'هل تريد فتح الطلب الموجود؟'}
+                            </p>
+                        </div>
+                    `,
+                    icon: isTransferMode ? 'error' : 'question',
+                    showCancelButton: !isTransferMode,
+                    confirmButtonColor: isTransferMode ? '#ef4444' : '#10b981',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: isTransferMode ? 'حسناً' : '✓ فتح الطلب',
+                    cancelButtonText: 'إلغاء'
+                });
+
+                if (result.isConfirmed && !isTransferMode) {
+                    localStorage.setItem('selectedTableId', tableId);
+                    localStorage.setItem('tableAction', 'load');
+                    window.location.href = 'pos.html';
+                }
+            } else {
+                // طاولة متاحة
+                if (isTransferMode) {
+                    // نقل الطلب الحالي - مباشرة بدون تأكيد
+                    localStorage.setItem('selectedTableId', tableId);
+                    localStorage.setItem('tableAction', 'transfer');
+                    window.location.href = 'pos.html';
+                } else if (isSelectMode) {
+                    // اختيار طاولة جديدة (حفظ الطلب السابق) - مباشرة بدون تأكيد
+                    localStorage.setItem('selectedTableId', tableId);
+                    localStorage.setItem('tableAction', 'select');
+                    window.location.href = 'pos.html';
+                } else {
+                    // فتح طلب جديد
+                    localStorage.setItem('selectedTableId', tableId);
+                    localStorage.setItem('tableAction', 'new');
+                    window.location.href = 'pos.html';
+                }
+            }
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // تحميل الطاولات عند فتح الصفحة
+        loadTables();
+
+        // تحديث الطاولات كل 5 ثواني
+        setInterval(() => {
+            tables = JSON.parse(localStorage.getItem('tables')) || [];
+            loadTables();
+        }, 5000);
+    </script>
+</body>
+
+</html>

@@ -209,18 +209,134 @@ let tables = JSON.parse(localStorage.getItem('tables')) || initializeTables();
 let openOrders = JSON.parse(localStorage.getItem('openOrders')) || [];
 
 // الطلب الحالي
-let currentOrder = {
-    id: Date.now(),
-    tableId: 1,
-    tableName: 'طاولة 1',
-    items: [],
-    subtotal: 0,
-    tax: 0,
-    discount: 0,
-    total: 0,
-    status: 'open',
-    createdAt: new Date().toISOString()
-};
+// التحقق من وجود طاولة مختارة من صفحة الطاولات
+const selectedTableId = localStorage.getItem('selectedTableId');
+const tableAction = localStorage.getItem('tableAction');
+let initialTableId = 1;
+let initialTableName = 'طاولة 1';
+
+// تحميل الطلب الحالي من localStorage
+let savedOrder = JSON.parse(localStorage.getItem('currentOrder'));
+
+if (selectedTableId) {
+    const selectedTable = tables.find(t => t.id === parseInt(selectedTableId));
+    if (selectedTable) {
+        if (tableAction === 'transfer' && savedOrder && savedOrder.items.length > 0) {
+            // نقل الطلب الحالي للطاولة الجديدة
+            console.log('🔄 Transferring order from table', savedOrder.tableId, 'to', selectedTable.id);
+
+            const oldTable = tables.find(t => t.id === savedOrder.tableId);
+            const oldTableId = savedOrder.tableId;
+
+            if (oldTable) {
+                oldTable.status = 'available';
+                oldTable.orderId = null;
+                console.log('✓ Old table freed:', oldTable.name);
+            }
+
+            savedOrder.tableId = selectedTable.id;
+            savedOrder.tableName = selectedTable.name;
+
+            selectedTable.status = 'occupied';
+            selectedTable.orderId = savedOrder.id;
+            console.log('✓ New table occupied:', selectedTable.name);
+
+            // تحديث جميع الطلبات المحفوظة في openOrders للطاولة القديمة
+            let openOrdersTemp = JSON.parse(localStorage.getItem('openOrders')) || [];
+
+            // تحديث جميع الطلبات المرتبطة بالطاولة القديمة
+            openOrdersTemp = openOrdersTemp.map(order => {
+                if (order.tableId === oldTableId) {
+                    console.log(`📝 Updating order ${order.id} from table ${oldTableId} to ${selectedTable.id}`);
+                    return {
+                        ...order,
+                        tableId: selectedTable.id,
+                        tableName: selectedTable.name
+                    };
+                }
+                return order;
+            });
+
+            localStorage.setItem('openOrders', JSON.stringify(openOrdersTemp));
+
+            // تحديث المتغير العام openOrders
+            openOrders = openOrdersTemp;
+
+            console.log('✓ Updated all orders from old table to new table');
+            console.log('✓ Orders in new table:', openOrdersTemp.filter(o => o.tableId === selectedTable.id).length);
+
+            localStorage.setItem('tables', JSON.stringify(tables));
+            localStorage.setItem('currentOrder', JSON.stringify(savedOrder));
+
+            initialTableId = selectedTable.id;
+            initialTableName = selectedTable.name;
+
+            // تحديث اسم الطاولة في الواجهة
+            updateTableNameDisplay(selectedTable.name);
+        } else if (tableAction === 'load') {
+            // تحميل طلب موجود من طاولة مشغولة
+            let openOrders = JSON.parse(localStorage.getItem('openOrders')) || [];
+            const existingOrder = openOrders.find(o => o.tableId === selectedTable.id);
+            if (existingOrder) {
+                savedOrder = existingOrder;
+                initialTableId = selectedTable.id;
+                initialTableName = selectedTable.name;
+                console.log('✓ Loading existing order from', selectedTable.name);
+            } else {
+                initialTableId = selectedTable.id;
+                initialTableName = selectedTable.name;
+            }
+        } else if (tableAction === 'select') {
+            // اختيار طاولة جديدة وبدء طلب جديد (حفظ الطلب السابق)
+            initialTableId = selectedTable.id;
+            initialTableName = selectedTable.name;
+
+            // حجز الطاولة الجديدة
+            selectedTable.status = 'occupied';
+            selectedTable.orderId = Date.now();
+            localStorage.setItem('tables', JSON.stringify(tables));
+            console.log('✓ New order on', selectedTable.name);
+
+            // مسح الطلب المحفوظ لبدء طلب جديد
+            savedOrder = null;
+        } else {
+            // فتح طلب جديد
+            initialTableId = selectedTable.id;
+            initialTableName = selectedTable.name;
+
+            // حجز الطاولة
+            selectedTable.status = 'occupied';
+            selectedTable.orderId = Date.now();
+            localStorage.setItem('tables', JSON.stringify(tables));
+            console.log('✓ New order on', selectedTable.name);
+        }
+
+        // مسح البيانات المؤقتة
+        localStorage.removeItem('selectedTableId');
+        localStorage.removeItem('tableAction');
+    }
+}
+
+let currentOrder;
+if (savedOrder && (tableAction === 'transfer' || tableAction === 'load')) {
+    currentOrder = savedOrder;
+    console.log('✓ Using saved order:', currentOrder.id, 'Items:', currentOrder.items.length);
+} else {
+    // إنشاء طلب جديد (سواء كان select أو طلب عادي)
+    currentOrder = {
+        id: Date.now(),
+        tableId: initialTableId,
+        tableName: initialTableName,
+        items: [],
+        subtotal: 0,
+        tax: 0,
+        discount: 0,
+        total: 0,
+        status: 'open',
+        createdAt: new Date().toISOString()
+    };
+    console.log('✓ New order created:', currentOrder.id);
+}
 
 let currentCategory = 'all';
 let numpadValue = '';
@@ -436,211 +552,21 @@ function getProductOptions(productName, productCategory, productId) {
     return null;
 }
 
-function showProductOptions(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
-
-    const options = getProductOptions(product.name, product.category, product.id);
-
-    if (!options) {
-        addToCartDirect(productId);
-        return;
-    }
-
-    selectedProductForOptions = {
-        product: product,
-        selectedOptions: {},
-        note: ''
-    };
-
-    document.getElementById('productOptionsTitle').textContent = `خيارات ${product.name}`;
-
-    const optionsList = document.getElementById('optionsList');
-    let html = '';
-
-    for (let optionKey in options) {
-        const option = options[optionKey];
-        html += `<div class="option-group"><h4><i class="fas fa-dot-circle"></i> ${option.title} ${option.required ? '<span style="color: #ef4444;">*</span>' : ''}</h4>`;
-
-        option.options.forEach((opt, index) => {
-            const inputId = `${optionKey}_${index}`;
-            html += `
-                <div class="option-item" onclick="selectOption('${optionKey}', '${opt}', '${option.type}', this)">
-                    <input type="${option.type}" id="${inputId}" name="${optionKey}" value="${opt}">
-                    <label for="${inputId}">${opt}</label>
-                </div>
-            `;
-        });
-
-        html += '</div>';
-    }
-
-    optionsList.innerHTML = html;
-    document.getElementById('productNote').value = '';
-    const modal = document.getElementById('productOptionsModal');
-    modal.style.display = 'block';
-    modal.style.visibility = 'visible';
-}
-
-function selectOption(optionKey, value, type, element) {
-    if (type === 'radio') {
-        element.parentElement.querySelectorAll('.option-item').forEach(item => {
-            item.classList.remove('selected');
-        });
-        element.classList.add('selected');
-        element.querySelector('input').checked = true;
-
-        if (!selectedProductForOptions) return;
-        selectedProductForOptions.selectedOptions[optionKey] = value;
-    } else if (type === 'checkbox') {
-        element.classList.toggle('selected');
-        const checkbox = element.querySelector('input');
-        checkbox.checked = !checkbox.checked;
-
-        if (!selectedProductForOptions) return;
-
-        // Handle multiple checkbox selections
-        if (!selectedProductForOptions.selectedOptions[optionKey]) {
-            selectedProductForOptions.selectedOptions[optionKey] = [];
-        }
-
-        if (checkbox.checked) {
-            if (!selectedProductForOptions.selectedOptions[optionKey].includes(value)) {
-                selectedProductForOptions.selectedOptions[optionKey].push(value);
-            }
-        } else {
-            selectedProductForOptions.selectedOptions[optionKey] =
-                selectedProductForOptions.selectedOptions[optionKey].filter(v => v !== value);
-        }
-    }
-}
-
-function closeProductOptions() {
-    const modal = document.getElementById('productOptionsModal');
-    if (modal) {
-        modal.style.display = 'none';
-        modal.style.visibility = 'hidden';
-    }
-    selectedProductForOptions = null;
-}
-
-function confirmProductOptions() {
-    if (!selectedProductForOptions) return;
-
-    const product = selectedProductForOptions.product;
-    const options = getProductOptions(product.name, product.category, product.id);
-
-    for (let optionKey in options) {
-        if (options[optionKey].required && !selectedProductForOptions.selectedOptions[optionKey]) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'تنبيه',
-                text: `يرجى اختيار ${options[optionKey].title}`,
-                confirmButtonColor: '#8b4513'
-            });
-            return;
-        }
-    }
-
-    selectedProductForOptions.note = document.getElementById('productNote').value;
-
-    let optionsText = '';
-    for (let key in selectedProductForOptions.selectedOptions) {
-        const value = selectedProductForOptions.selectedOptions[key];
-        if (Array.isArray(value)) {
-            if (value.length > 0) {
-                optionsText += value.join(', ') + ' ';
-            }
-        } else {
-            optionsText += value + ' ';
-        }
-    }
-    if (selectedProductForOptions.note) {
-        optionsText += `(${selectedProductForOptions.note})`;
-    }
-
-    const existingItem = currentOrder.items.find(item =>
-        item.id === product.id && item.options === optionsText.trim()
-    );
-
-    if (existingItem) {
-        existingItem.quantity++;
-    } else {
-        currentOrder.items.push({
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            quantity: 1,
-            options: optionsText.trim()
-        });
-    }
-
-    updateCart();
-
-    // Close modal with smooth animation
-    const modal = document.getElementById('productOptionsModal');
-    const modalContent = modal?.querySelector('.modal-content');
-
-    if (modal && modalContent) {
-        // Add fade out animation
-        modalContent.style.animation = 'slideOut 0.3s ease';
-        modal.style.opacity = '0';
-
-        setTimeout(() => {
-            modal.style.display = 'none';
-            modal.style.visibility = 'hidden';
-            modal.style.opacity = '1';
-            modalContent.style.animation = '';
-        }, 300);
-    }
-
-    selectedProductForOptions = null;
-
-    // Show success toast
-    Swal.fire({
-        icon: 'success',
-        title: 'تمت الإضافة ✓',
-        text: `${product.name}`,
-        timer: 1200,
-        showConfirmButton: false,
-        toast: true,
-        position: 'top-end',
-        background: '#10b981',
-        color: '#fff'
-    });
-
-    console.log('✅ Product added and modal closed');
-}
+// تم إزالة نظام الخيارات
 
 // إضافة إلى السلة
 function addToCart(productId) {
-    showProductOptions(productId);
-}
-
-function addToCartDirect(productId) {
     const product = products.find(p => p.id === productId);
     if (!product || product.stock === 0) {
-        Swal.fire({
-            icon: 'error',
-            title: 'غير متوفر',
-            text: 'هذا المنتج نفذ من المخزون',
-            confirmButtonColor: '#ef4444'
-        });
         return;
     }
 
-    const existingItem = currentOrder.items.find(item => item.id === productId && !item.options);
+    const existingItem = currentOrder.items.find(item => item.id === productId);
 
     if (existingItem) {
         if (existingItem.quantity < product.stock) {
             existingItem.quantity++;
         } else {
-            Swal.fire({
-                icon: 'warning',
-                title: 'تنبيه',
-                text: 'المخزون غير كافٍ',
-                confirmButtonColor: '#f59e0b'
-            });
             return;
         }
     } else {
@@ -653,6 +579,7 @@ function addToCartDirect(productId) {
     }
 
     updateCart();
+    saveCurrentOrder();
 }
 
 // تحديث السلة
@@ -671,7 +598,6 @@ function updateCart() {
             <div class="cart-item">
                 <div class="cart-item-info">
                     <h4>${item.name}</h4>
-                    ${item.options ? `<p style="font-size: 0.8rem; color: #8b4513; margin: 0.25rem 0;">${item.options}</p>` : ''}
                     <p>${item.price.toFixed(2)} ج.م</p>
                 </div>
                 <div class="cart-item-controls">
@@ -698,6 +624,7 @@ function increaseQtyByIndex(index) {
     if (item && item.quantity < product.stock) {
         item.quantity++;
         updateCart();
+        saveCurrentOrder();
     }
 }
 
@@ -713,6 +640,7 @@ function decreaseQtyByIndex(index) {
             return;
         }
         updateCart();
+        saveCurrentOrder();
     }
 }
 
@@ -720,6 +648,7 @@ function decreaseQtyByIndex(index) {
 function removeItemByIndex(index) {
     currentOrder.items.splice(index, 1);
     updateCart();
+    saveCurrentOrder();
 }
 
 // زيادة الكمية (old function for compatibility)
@@ -891,8 +820,7 @@ async function holdOrder() {
             status: 'open',
             createdAt: new Date().toISOString()
         };
-        document.getElementById('currentTableName').textContent = availableTable.name;
-        document.getElementById('statusTableName').textContent = availableTable.name;
+        updateTableNameDisplay(availableTable.name);
     } else {
         // إذا لم توجد طاولة متاحة، إنشاء طلب بدون طاولة
         currentOrder = {
@@ -907,8 +835,7 @@ async function holdOrder() {
             status: 'open',
             createdAt: new Date().toISOString()
         };
-        document.getElementById('currentTableName').textContent = 'بدون طاولة';
-        document.getElementById('statusTableName').textContent = 'بدون طاولة';
+        updateTableNameDisplay('بدون طاولة');
     }
 
     generateOrderNumber();
@@ -933,108 +860,103 @@ async function holdOrder() {
     });
 }
 
-// حفظ الطلب (للطاولات - تبقى مشغولة)
+// حفظ الطلب (الطاولة تبقى مشغولة)
 async function saveOrder() {
     if (currentOrder.items.length === 0) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'تنبيه',
-            text: 'لا توجد منتجات لحفظها',
-            confirmButtonColor: '#f59e0b'
-        });
         return;
     }
 
-    // تأكيد الحفظ
-    const result = await Swal.fire({
-        title: 'حفظ الطلب',
-        html: `
-            <div style="text-align: center;">
-                <p style="font-size: 1.1rem; margin-bottom: 1rem;">
-                    هل تريد حفظ طلب <strong>${currentOrder.tableName}</strong>؟
-                </p>
-                <p style="color: #64748b;">
-                    الطاولة ستبقى مشغولة حتى إتمام الدفع
-                </p>
-            </div>
-        `,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#10b981',
-        cancelButtonColor: '#94a3b8',
-        confirmButtonText: '✓ نعم، احفظ',
-        cancelButtonText: 'إلغاء'
-    });
-
-    if (!result.isConfirmed) return;
-
+    // حفظ الطلب في openOrders
     currentOrder.status = 'hold';
-    openOrders.push({ ...currentOrder });
+    const existingIndex = openOrders.findIndex(o => o.id === currentOrder.id);
+    if (existingIndex === -1) {
+        openOrders.push({ ...currentOrder });
+    } else {
+        openOrders[existingIndex] = { ...currentOrder };
+    }
     localStorage.setItem('openOrders', JSON.stringify(openOrders));
 
-    // إبقاء الطاولة مشغولة
+    // الطاولة تبقى مشغولة
     const table = tables.find(t => t.id === currentOrder.tableId);
     if (table) {
-        table.status = 'occupied'; // تبقى مشغولة
+        table.status = 'occupied';
         table.orderId = currentOrder.id;
         localStorage.setItem('tables', JSON.stringify(tables));
     }
 
-    // طلب جديد على طاولة أخرى
-    const availableTable = tables.find(t => t.status === 'available');
-    if (availableTable) {
-        currentOrder = {
-            id: Date.now(),
-            tableId: availableTable.id,
-            tableName: availableTable.name,
-            items: [],
-            subtotal: 0,
-            tax: 0,
-            discount: 0,
-            total: 0,
-            status: 'open',
-            createdAt: new Date().toISOString()
-        };
-        document.getElementById('currentTableName').textContent = availableTable.name;
-        document.getElementById('statusTableName').textContent = availableTable.name;
-    } else {
-        // إذا لم توجد طاولة متاحة، إنشاء طلب بدون طاولة
-        currentOrder = {
-            id: Date.now(),
-            tableId: null,
-            tableName: 'بدون طاولة',
-            items: [],
-            subtotal: 0,
-            tax: 0,
-            discount: 0,
-            total: 0,
-            status: 'open',
-            createdAt: new Date().toISOString()
-        };
-        document.getElementById('currentTableName').textContent = 'بدون طاولة';
-        document.getElementById('statusTableName').textContent = 'بدون طاولة';
-    }
+    // إنشاء طلب جديد فاضي على نفس الطاولة
+    const savedTableId = currentOrder.tableId;
+    const savedTableName = currentOrder.tableName;
+
+    currentOrder = {
+        id: Date.now(),
+        tableId: savedTableId,
+        tableName: savedTableName,
+        items: [],
+        subtotal: 0,
+        tax: 0,
+        discount: 0,
+        total: 0,
+        status: 'open',
+        createdAt: new Date().toISOString()
+    };
 
     generateOrderNumber();
     updateCart();
     loadOpenOrders();
+    saveCurrentOrder();
+}
 
-    Swal.fire({
-        icon: 'success',
-        title: 'تم الحفظ ✓',
-        html: `
-            <div style="text-align: center;">
-                <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">
-                    تم حفظ طلب <strong style="color: #10b981;">${table ? table.name : currentOrder.tableName}</strong>
-                </p>
-                <p style="color: #64748b; font-size: 0.9rem;">
-                    ${table ? `${table.name} لا تزال مشغولة` : 'يمكنك العودة للطلب من القائمة الجانبية'}
-                </p>
-            </div>
-        `,
-        timer: 2000,
-        showConfirmButton: false
-    });
+// اختيار طاولة جديدة (حفظ الطلب الحالي واختيار طاولة)
+function selectNewTable() {
+    // حفظ الطلب الحالي إذا كان فيه منتجات
+    if (currentOrder.items.length > 0) {
+        saveCurrentOrder();
+
+        // حفظ الطلب في openOrders إذا لم يكن محفوظاً
+        const existingIndex = openOrders.findIndex(o => o.id === currentOrder.id);
+        if (existingIndex === -1) {
+            openOrders.push({ ...currentOrder });
+            localStorage.setItem('openOrders', JSON.stringify(openOrders));
+        }
+
+        console.log('✓ Current order saved. Table:', currentOrder.tableName, 'Items:', currentOrder.items.length);
+    }
+
+    // تعيين علامة للاختيار (ليس نقل)
+    localStorage.setItem('tableAction', 'select');
+
+    // الانتقال لصفحة الطاولات
+    window.location.href = 'tables.html';
+}
+
+// تبديل الطاولة (نقل الأوردر الحالي)
+async function transferTable() {
+    // حفظ الطلب الحالي أولاً
+    saveCurrentOrder();
+
+    // تحديث currentOrder من localStorage للتأكد من أحدث البيانات
+    const savedCurrentOrder = localStorage.getItem('currentOrder');
+    if (savedCurrentOrder) {
+        try {
+            const tempOrder = JSON.parse(savedCurrentOrder);
+            console.log('📦 Transfer - Current order:', tempOrder.tableId, 'Items:', tempOrder.items?.length || 0);
+
+            if (!tempOrder || !tempOrder.items || tempOrder.items.length === 0) {
+                console.warn('⚠️ No items in order');
+                return;
+            }
+        } catch (e) {
+            console.error('Error loading current order:', e);
+            return;
+        }
+    }
+
+    // تعيين علامة للنقل
+    localStorage.setItem('tableAction', 'transfer');
+
+    // الانتقال لصفحة الطاولات
+    window.location.href = 'tables.html';
 }
 
 // طلب جديد
@@ -1167,8 +1089,7 @@ function loadOrder(index) {
     currentOrder = { ...openOrders[index] };
 
     // تحديث اسم الطاولة في الواجهة
-    document.getElementById('currentTableName').textContent = currentOrder.tableName;
-    document.getElementById('statusTableName').textContent = currentOrder.tableName;
+    updateTableNameDisplay(currentOrder.tableName);
 
     // تحديث رقم الطلب
     const orderNum = String(currentOrder.id).slice(-4);
@@ -1585,8 +1506,7 @@ function completePayment(method, received) {
     localStorage.removeItem('currentOrder');
 
     // تحديث الواجهة
-    document.getElementById('currentTableName').textContent = 'طاولة 1';
-    document.getElementById('statusTableName').textContent = 'طاولة 1';
+    updateTableNameDisplay('طاولة 1');
 
     // توليد رقم طلب جديد
     generateOrderNumber();
@@ -1870,8 +1790,7 @@ async function selectTable(tableId) {
 
     localStorage.setItem('tables', JSON.stringify(tables));
 
-    document.getElementById('currentTableName').textContent = table.name;
-    document.getElementById('statusTableName').textContent = table.name;
+    updateTableNameDisplay(table.name);
 
     // توليد رقم طلب جديد
     generateOrderNumber();
@@ -1936,8 +1855,7 @@ function loadTableOrder(tableId) {
         };
     }
 
-    document.getElementById('currentTableName').textContent = table.name;
-    document.getElementById('statusTableName').textContent = table.name;
+    updateTableNameDisplay(table.name);
 
     updateCart();
 
@@ -2058,8 +1976,7 @@ async function moveToTable(newTableId) {
     localStorage.setItem('tables', JSON.stringify(tables));
     loadOpenOrders(); // تحديث قائمة الطلبات المعلقة
 
-    document.getElementById('currentTableName').textContent = newTable.name;
-    document.getElementById('statusTableName').textContent = newTable.name;
+    updateTableNameDisplay(newTable.name);
 
     closeChangeTableModal();
 
@@ -2665,9 +2582,65 @@ window.forceUpdateProducts = function () {
     console.log('✓ تم تحديث المنتجات بنجاح!');
 };
 
+// دالة تنظيف الطاولات المشغولة بدون طلبات
+function cleanupOrphanedTables() {
+    let tables = JSON.parse(localStorage.getItem('tables')) || [];
+    let openOrders = JSON.parse(localStorage.getItem('openOrders')) || [];
+    let currentOrder = JSON.parse(localStorage.getItem('currentOrder'));
+    let hasChanges = false;
+
+    console.log('🔍 Checking tables for cleanup...');
+    console.log('Open orders:', openOrders.length);
+    console.log('Current order:', currentOrder ? `Table ${currentOrder.tableId}, Items: ${currentOrder.items?.length || 0}` : 'None');
+
+    tables.forEach(table => {
+        if (table.status === 'occupied') {
+            // التحقق من وجود طلب على هذه الطاولة
+            const hasOpenOrder = openOrders.some(o => o.tableId === table.id);
+            const isCurrentTable = currentOrder && currentOrder.tableId === table.id && currentOrder.items && currentOrder.items.length > 0;
+
+            console.log(`Table ${table.id} (${table.name}): hasOpenOrder=${hasOpenOrder}, isCurrentTable=${isCurrentTable}`);
+
+            if (!hasOpenOrder && !isCurrentTable) {
+                // طاولة مشغولة بدون طلب - تحريرها
+                console.log('🧹 Cleaning orphaned table:', table.name);
+                table.status = 'available';
+                table.orderId = null;
+                hasChanges = true;
+            }
+        }
+    });
+
+    if (hasChanges) {
+        localStorage.setItem('tables', JSON.stringify(tables));
+        console.log('✓ Orphaned tables cleaned');
+    } else {
+        console.log('✓ No orphaned tables found');
+    }
+}
+
+// إضافة دالة للتنظيف اليدوي
+window.cleanupTables = cleanupOrphanedTables;
+
 // التهيئة
 fixProductIcons();
+cleanupOrphanedTables(); // تنظيف الطاولات عند فتح الصفحة
 generateOrderNumber();
 loadProducts();
 loadOpenOrders();
 updateCart();
+
+// دالة لتحديث اسم الطاولة في كل الأماكن
+function updateTableNameDisplay(tableName) {
+    const elements = ['currentTableName', 'statusTableName', 'sidebarTableName'];
+    elements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = tableName;
+        }
+    });
+}
+
+// تحديث اسم الطاولة في الواجهة
+updateTableNameDisplay(currentOrder.tableName);
+

@@ -21,25 +21,15 @@
                 <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
                     <i class="fas fa-bars"></i>
                 </button>
+                <div class="header-time" id="headerTime"></div>
                 <div class="logo">
                     <i class="fas fa-mug-hot"></i>
                     <span>مقهى القهوة</span>
                 </div>
-                <div class="header-time" id="headerTime"></div>
+                <div style="width: 100px;"></div>
             </div>
 
             <div class="header-menu" id="headerMenu">
-                <div class="header-center">
-                    <button class="header-btn" onclick="showTables()">
-                        <i class="fas fa-chair"></i>
-                        <span>الطاولات</span>
-                    </button>
-                    <button class="header-btn" id="currentTableBtn" onclick="changeTable()">
-                        <i class="fas fa-exchange-alt"></i>
-                        <span id="currentTableName">طاولة 1</span>
-                    </button>
-                </div>
-
                 <div class="header-right">
                     <span class="cashier-info">
                         <i class="fas fa-user"></i>
@@ -60,11 +50,12 @@
                         <i class="fas fa-door-open"></i>
                         <span>إغلاق الشيفت</span>
                     </button>
-                    <button class="header-btn btn-logout" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>خروج</span>
-                    </button>
+
                 </div>
+                <button class="header-btn btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>خروج</span>
+                </button>
             </div>
         </header>
 
@@ -125,6 +116,8 @@
                     <span class="order-number" id="orderNumber">#0001</span>
                 </div>
 
+
+
                 <div class="cart-items" id="cartItems">
                     <div class="empty-cart">
                         <i class="fas fa-shopping-basket"></i>
@@ -167,6 +160,14 @@
                     <button class="action-btn btn-hold" onclick="holdOrder()">
                         <i class="fas fa-pause"></i>
                         تعليق
+                    </button>
+                    <button class="action-btn btn-table-change" onclick="transferTable()">
+                        <i class="fas fa-exchange-alt"></i>
+                        تبديل
+                    </button>
+                    <button class="action-btn btn-table-select" id="currentTableBtn" onclick="selectNewTable()">
+                        <i class="fas fa-chair"></i>
+                        <span id="currentTableName">طاولة 1</span>
                     </button>
                 </div>
 
