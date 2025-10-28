@@ -812,39 +812,18 @@ async function clearCart() {
 // تعليق الطلب
 async function holdOrder() {
     if (currentOrder.items.length === 0) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'تنبيه',
-            text: 'لا توجد منتجات لتعليقها',
-            confirmButtonColor: '#f59e0b'
-        });
         return;
     }
 
-    // تأكيد التعليق (تيك أواي)
-    const result = await Swal.fire({
-        title: 'تعليق الطلب (تيك أواي)',
-        html: `
-            <div style="text-align: center;">
-                <p style="font-size: 1.1rem; margin-bottom: 1rem;">
-                    هل تريد تعليق الطلب كـ <strong style="color: #f59e0b;">تيك أواي</strong>؟
-                </p>
-                <p style="color: #64748b;">
-                    سيتم تحرير الطاولة ويمكنك العودة للطلب لاحقاً
-                </p>
-            </div>
-        `,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#f59e0b',
-        cancelButtonColor: '#94a3b8',
-        confirmButtonText: 'نعم، علق',
-        cancelButtonText: 'إلغاء'
-    });
+    // حساب رقم التيك أواي التالي
+    const takeawayOrders = openOrders.filter(o => o.tableName && o.tableName.startsWith('تيك أواي'));
+    const nextTakeawayNumber = takeawayOrders.length + 1;
 
-    if (!result.isConfirmed) return;
-
+    // تغيير اسم الطاولة لتيك أواي مع العداد
+    currentOrder.tableName = `تيك أواي ${nextTakeawayNumber}`;
     currentOrder.status = 'hold';
+    currentOrder.isTakeaway = true;
+
     openOrders.push({ ...currentOrder });
     localStorage.setItem('openOrders', JSON.stringify(openOrders));
 
@@ -892,23 +871,7 @@ async function holdOrder() {
     generateOrderNumber();
     updateCart();
     loadOpenOrders();
-
-    Swal.fire({
-        icon: 'success',
-        title: 'تم التعليق',
-        html: `
-            <div style="text-align: center;">
-                <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">
-                    تم تعليق الطلب <strong style="color: #f59e0b;">(تيك أواي)</strong>
-                </p>
-                <p style="color: #64748b; font-size: 0.9rem;">
-                    ${table ? `${table.name} أصبحت متاحة الآن` : 'يمكنك العودة للطلب من القائمة الجانبية'}
-                </p>
-            </div>
-        `,
-        timer: 2000,
-        showConfirmButton: false
-    });
+    saveCurrentOrder();
 }
 
 // حفظ الطلب (الطاولة تبقى مشغولة)
