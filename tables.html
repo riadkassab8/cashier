@@ -16,18 +16,42 @@
 
         body {
             font-family: 'Segoe UI', 'Cairo', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3e2723 0%, #5d4037 50%, #6d4c41 100%);
+            background-attachment: fixed;
             min-height: 100vh;
             padding: 20px;
             direction: rtl;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(139, 69, 19, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(160, 82, 45, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(109, 76, 65, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body>* {
+            position: relative;
+            z-index: 1;
         }
 
         .header {
-            background: white;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 246, 227, 0.95) 100%);
+            backdrop-filter: blur(10px);
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(139, 69, 19, 0.2);
+            border: 1px solid rgba(139, 69, 19, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -36,6 +60,7 @@
         .header h1 {
             color: #8b4513;
             font-size: 28px;
+            text-shadow: 0 2px 4px rgba(139, 69, 19, 0.1);
         }
 
         .header-buttons {
@@ -67,14 +92,16 @@
         }
 
         .legend {
-            background: white;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 246, 227, 0.95) 100%);
+            backdrop-filter: blur(10px);
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 20px;
             display: flex;
             gap: 30px;
             justify-content: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(139, 69, 19, 0.2);
+            border: 1px solid rgba(139, 69, 19, 0.1);
         }
 
         .legend-item {
@@ -104,10 +131,12 @@
         }
 
         .tables-container {
-            background: white;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 246, 227, 0.95) 100%);
+            backdrop-filter: blur(10px);
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(139, 69, 19, 0.2);
+            border: 1px solid rgba(139, 69, 19, 0.1);
         }
 
         .tables-grid {

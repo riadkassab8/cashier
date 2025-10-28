@@ -469,7 +469,12 @@ function updateTime() {
 updateTime();
 setInterval(updateTime, 1000);
 
-// تحميل المنتجات
+// نظام Pagination
+const PRODUCTS_PER_PAGE = 28;
+let currentPage = 1;
+let categoryPages = {}; // حفظ الصفحة الحالية لكل فئة
+
+// تحميل المنتجات مع Pagination
 function loadProducts() {
     const grid = document.getElementById('productsGrid');
     const filtered = currentCategory === 'all'
@@ -477,11 +482,29 @@ function loadProducts() {
         : products.filter(p => p.category === currentCategory);
 
     console.log('Loading products:', filtered.length, 'Category:', currentCategory);
-    console.log('Total products:', products.length);
-    console.log('Shisha products:', products.filter(p => p.category === 'shisha'));
 
-    grid.innerHTML = filtered.map(product => {
-        // استخدام الصورة فقط
+    // الحصول على الصفحة الحالية للفئة
+    if (!categoryPages[currentCategory]) {
+        categoryPages[currentCategory] = 1;
+    }
+    currentPage = categoryPages[currentCategory];
+
+    // حساب عدد الصفحات
+    const totalPages = Math.ceil(filtered.length / PRODUCTS_PER_PAGE);
+
+    // التأكد من أن الصفحة الحالية ضمن النطاق
+    if (currentPage > totalPages) {
+        currentPage = 1;
+        categoryPages[currentCategory] = 1;
+    }
+
+    // حساب المنتجات للصفحة الحالية
+    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+    const endIndex = startIndex + PRODUCTS_PER_PAGE;
+    const paginatedProducts = filtered.slice(startIndex, endIndex);
+
+    // عرض المنتجات
+    grid.innerHTML = paginatedProducts.map(product => {
         const imageHtml = `<img src="${product.image || 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200&h=200&fit=crop'}" alt="${product.name}">`;
 
         return `
@@ -495,6 +518,78 @@ function loadProducts() {
             </div>
         `;
     }).join('');
+
+    // عرض أزرار Pagination
+    renderPagination(totalPages, filtered.length);
+}
+
+// عرض أزرار Pagination
+function renderPagination(totalPages, totalProducts) {
+    let paginationContainer = document.getElementById('paginationContainer');
+
+    if (!paginationContainer) {
+        // إنشاء container للـ pagination
+        paginationContainer = document.createElement('div');
+        paginationContainer.id = 'paginationContainer';
+        paginationContainer.className = 'pagination-container';
+
+        const productsArea = document.querySelector('.products-area');
+        const productsGrid = document.getElementById('productsGrid');
+        productsArea.insertBefore(paginationContainer, productsGrid.nextSibling);
+    }
+
+    if (totalPages <= 1) {
+        paginationContainer.innerHTML = '';
+        return;
+    }
+
+    const startProduct = ((currentPage - 1) * PRODUCTS_PER_PAGE) + 1;
+    const endProduct = Math.min(currentPage * PRODUCTS_PER_PAGE, totalProducts);
+
+    // إنشاء أزرار الصفحات
+    let pageButtons = '';
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        pageButtons += `
+            <button class="pagination-number ${i === currentPage ? 'active' : ''}" 
+                    onclick="changePage(${i})">
+                ${i}
+            </button>
+        `;
+    }
+
+    paginationContainer.innerHTML = `
+        <div class="pagination-wrapper">
+            <button class="pagination-btn pagination-prev" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            
+            <div class="pagination-numbers">
+                ${pageButtons}
+            </div>
+            
+            <button class="pagination-btn pagination-next" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+    `;
+}
+
+// تغيير الصفحة
+function changePage(page) {
+    categoryPages[currentCategory] = page;
+    currentPage = page;
+    loadProducts();
+
+    // التمرير لأعلى منطقة المنتجات
+    document.getElementById('productsGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // تصفية المنتجات
@@ -504,6 +599,13 @@ function filterProducts(category) {
         btn.classList.remove('active');
     });
     event.target.classList.add('active');
+
+    // إعادة تعيين الصفحة للفئة الجديدة
+    if (!categoryPages[category]) {
+        categoryPages[category] = 1;
+    }
+    currentPage = categoryPages[category];
+
     loadProducts();
 }
 
