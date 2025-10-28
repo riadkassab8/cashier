@@ -281,9 +281,20 @@
             tables = initializeTables();
         }
 
-        // إضافة الطاولات المميزة إذا لم تكن موجودة
+        // إعادة ترتيب الطاولات: العادية أولاً ثم المميزة
+        const specialTables = tables.filter(t => t.isSpecial);
+        const normalTables = tables.filter(t => !t.isSpecial);
+
+        // إذا كانت الطاولات المميزة في الأول، أعد الترتيب
+        if (specialTables.length > 0 && tables[0].isSpecial) {
+            tables = [...normalTables, ...specialTables];
+            localStorage.setItem('tables', JSON.stringify(tables));
+            console.log('✓ Tables reordered: special tables moved to end');
+        }
+
+        // إضافة الطاولات المميزة في الآخر إذا لم تكن موجودة
         if (!tables.find(t => t.id === 101)) {
-            tables.unshift({
+            tables.push({
                 id: 101,
                 name: 'النيابة',
                 status: 'available',
@@ -292,9 +303,10 @@
                 isSpecial: true,
                 specialType: 'vip'
             });
+            localStorage.setItem('tables', JSON.stringify(tables));
         }
         if (!tables.find(t => t.id === 102)) {
-            tables.splice(1, 0, {
+            tables.push({
                 id: 102,
                 name: 'الدكاترة',
                 status: 'available',
@@ -303,8 +315,8 @@
                 isSpecial: true,
                 specialType: 'vip'
             });
+            localStorage.setItem('tables', JSON.stringify(tables));
         }
-        localStorage.setItem('tables', JSON.stringify(tables));
 
         console.log('Tables loaded:', tables.length);
 

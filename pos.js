@@ -12,6 +12,11 @@ if (currentUser.role === 'admin' || currentUser.role === 'supervisor') {
     document.getElementById('dashboardBtn').style.display = 'flex';
 }
 
+// زر الإعدادات للأدمن فقط
+if (currentUser.role === 'admin') {
+    document.getElementById('settingsBtn').style.display = 'flex';
+}
+
 // إخفاء زر الخصم للكاشير
 if (currentUser.role === 'cashier') {
     document.getElementById('discountBtn').style.display = 'none';
@@ -199,9 +204,20 @@ if (savedVersion !== PRODUCTS_VERSION || !savedProducts || savedProducts.length 
 // الطاولات
 let tables = JSON.parse(localStorage.getItem('tables')) || initializeTables();
 
-// إضافة الطاولات المميزة إذا لم تكن موجودة
+// إعادة ترتيب الطاولات: العادية أولاً ثم المميزة
+const specialTables = tables.filter(t => t.isSpecial);
+const normalTables = tables.filter(t => !t.isSpecial);
+
+// إذا كانت الطاولات المميزة في الأول، أعد الترتيب
+if (specialTables.length > 0 && tables[0].isSpecial) {
+    tables = [...normalTables, ...specialTables];
+    localStorage.setItem('tables', JSON.stringify(tables));
+    console.log('✓ Tables reordered: special tables moved to end');
+}
+
+// إضافة الطاولات المميزة في الآخر إذا لم تكن موجودة
 if (!tables.find(t => t.id === 101)) {
-    tables.unshift({
+    tables.push({
         id: 101,
         name: 'النيابة',
         status: 'available',
@@ -210,9 +226,10 @@ if (!tables.find(t => t.id === 101)) {
         isSpecial: true,
         specialType: 'vip'
     });
+    localStorage.setItem('tables', JSON.stringify(tables));
 }
 if (!tables.find(t => t.id === 102)) {
-    tables.splice(1, 0, {
+    tables.push({
         id: 102,
         name: 'الدكاترة',
         status: 'available',
@@ -221,8 +238,8 @@ if (!tables.find(t => t.id === 102)) {
         isSpecial: true,
         specialType: 'vip'
     });
+    localStorage.setItem('tables', JSON.stringify(tables));
 }
-localStorage.setItem('tables', JSON.stringify(tables));
 
 // الطلبات المفتوحة
 let openOrders = JSON.parse(localStorage.getItem('openOrders')) || [];
@@ -393,7 +410,18 @@ function generateOrderNumber() {
 function initializeTables() {
     const tables = [];
 
-    // طاولات خاصة مميزة
+    // الطاولات العادية أولاً
+    for (let i = 1; i <= 100; i++) {
+        tables.push({
+            id: i,
+            name: `طاولة ${i}`,
+            status: 'available',
+            orderId: null,
+            capacity: i <= 30 ? 4 : i <= 70 ? 6 : 8
+        });
+    }
+
+    // طاولات خاصة مميزة في الآخر
     tables.push({
         id: 101,
         name: 'النيابة',
@@ -414,16 +442,6 @@ function initializeTables() {
         specialType: 'vip'
     });
 
-    // الطاولات العادية
-    for (let i = 1; i <= 100; i++) {
-        tables.push({
-            id: i,
-            name: `طاولة ${i}`,
-            status: 'available',
-            orderId: null,
-            capacity: i <= 30 ? 4 : i <= 70 ? 6 : 8
-        });
-    }
     localStorage.setItem('tables', JSON.stringify(tables));
     return tables;
 }
