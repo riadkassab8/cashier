@@ -2321,13 +2321,144 @@ async function logout() {
 
 // طباعة الفاتورة - Dual Receipt Printing System
 function printReceipt(sale) {
-    // Use the new dual receipt printing system
-    // This will print both Cashier Receipt and Bar Receipt automatically
+    // طباعة فاتورة الكاشير فقط
+    console.log('🖨️ Printing cashier receipt for order:', sale.id);
 
-    console.log('🖨️ Printing receipts for order:', sale.id);
+    const itemsHTML = sale.items.map(item => `
+        <tr>
+            <td style="padding: 0.5rem; border-bottom: 1px solid #e2e8f0;">${item.name}</td>
+            <td style="padding: 0.5rem; border-bottom: 1px solid #e2e8f0; text-align: center;">${item.quantity}</td>
+            <td style="padding: 0.5rem; border-bottom: 1px solid #e2e8f0; text-align: left;">${item.price.toFixed(2)}</td>
+            <td style="padding: 0.5rem; border-bottom: 1px solid #e2e8f0; text-align: left;">${(item.price * item.quantity).toFixed(2)}</td>
+        </tr>
+    `).join('');
 
-    // Call the new printReceipts function from print-receipts.js
-    printReceipts(sale);
+    const paymentMethodAr = {
+        'cash': 'نقدي',
+        'card': 'بطاقة',
+        'mobile': 'محفظة إلكترونية'
+    };
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="ar" dir="rtl">
+        <head>
+            <meta charset="UTF-8">
+            <title>فاتورة #${sale.id}</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body {
+                    font-family: 'Segoe UI', 'Cairo', Tahoma, sans-serif;
+                    padding: 20px;
+                    direction: rtl;
+                }
+                .receipt {
+                    max-width: 800px;
+                    margin: 0 auto;
+                    border: 2px solid #333;
+                    padding: 20px;
+                }
+                .header {
+                    text-align: center;
+                    border-bottom: 2px dashed #333;
+                    padding-bottom: 15px;
+                    margin-bottom: 15px;
+                }
+                .header h1 { font-size: 24px; margin-bottom: 10px; }
+                .header p { color: #666; font-size: 14px; }
+                .info { margin-bottom: 20px; }
+                .info p { margin-bottom: 5px; font-size: 14px; }
+                table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                th { background: #f0f0f0; padding: 10px; text-align: right; border-bottom: 2px solid #333; }
+                td { padding: 8px; }
+                .totals { border-top: 2px solid #333; padding-top: 15px; }
+                .totals div { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+                .total-row { font-size: 18px; font-weight: bold; margin-top: 10px; padding-top: 10px; border-top: 2px solid #333; }
+                .footer { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 2px dashed #333; color: #666; }
+                @media print {
+                    body { padding: 0; }
+                    .receipt { border: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="receipt">
+                <div class="header">
+                    <h1>مقهى القهوة الطازجة</h1>
+                    <p>شارع الملك فهد، الرياض</p>
+                    <p>هاتف: 0112345678</p>
+                </div>
+                
+                <div class="info">
+                    <p><strong>رقم الفاتورة:</strong> ${sale.id}</p>
+                    <p><strong>التاريخ:</strong> ${new Date(sale.completedAt).toLocaleString('ar-SA')}</p>
+                    <p><strong>الطاولة:</strong> ${sale.tableName}</p>
+                    <p><strong>الكاشير:</strong> ${sale.cashier}</p>
+                    <p><strong>طريقة الدفع:</strong> ${paymentMethodAr[sale.paymentMethod]}</p>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>المنتج</th>
+                            <th style="text-align: center;">الكمية</th>
+                            <th style="text-align: left;">السعر</th>
+                            <th style="text-align: left;">الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHTML}
+                    </tbody>
+                </table>
+                
+                <div class="totals">
+                    <div>
+                        <span>المجموع الفرعي:</span>
+                        <span>${sale.subtotal.toFixed(2)} ج.م</span>
+                    </div>
+                    <div>
+                        <span>الضريبة:</span>
+                        <span>${sale.tax.toFixed(2)} ج.م</span>
+                    </div>
+                    ${sale.discount > 0 ? `
+                    <div style="color: #ef4444;">
+                        <span>الخصم:</span>
+                        <span>-${(sale.subtotal * sale.discount / 100).toFixed(2)} ج.م</span>
+                    </div>
+                    ` : ''}
+                    <div class="total-row">
+                        <span>الإجمالي:</span>
+                        <span>${sale.total.toFixed(2)} ج.م</span>
+                    </div>
+                    <div>
+                        <span>المبلغ المستلم:</span>
+                        <span>${sale.cashReceived.toFixed(2)} ج.م</span>
+                    </div>
+                    ${sale.paymentMethod === 'cash' && sale.change > 0 ? `
+                    <div style="color: #10b981; font-weight: bold;">
+                        <span>الباقي:</span>
+                        <span>${sale.change.toFixed(2)} ج.م</span>
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <div class="footer">
+                    <p>شكراً لزيارتكم</p>
+                    <p>نتمنى رؤيتكم مرة أخرى</p>
+                </div>
+            </div>
+            
+            <script>
+                window.onload = function() {
+                    window.print();
+                    setTimeout(function() { window.close(); }, 100);
+                }
+            </script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
 }
 
 // Legacy print function (kept for reference - can be removed later)
