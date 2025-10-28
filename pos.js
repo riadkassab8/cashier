@@ -784,22 +784,11 @@ async function applyDiscount() {
 async function clearCart() {
     if (currentOrder.items.length === 0) return;
 
-    const result = await Swal.fire({
-        title: 'هل أنت متأكد؟',
-        text: 'سيتم مسح جميع المنتجات',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#64748b',
-        confirmButtonText: 'نعم، امسح',
-        cancelButtonText: 'إلغاء'
-    });
-
-    if (result.isConfirmed) {
-        currentOrder.items = [];
-        currentOrder.discount = 0;
-        updateCart();
-    }
+    // مسح السلة مباشرة بدون تأكيد
+    currentOrder.items = [];
+    currentOrder.discount = 0;
+    updateCart();
+    saveCurrentOrder();
 }
 
 // تعليق الطلب
@@ -1053,53 +1042,19 @@ function loadOpenOrders() {
 async function cancelOrder(index) {
     const order = openOrders[index];
 
-    const result = await Swal.fire({
-        title: 'إلغاء الطلب',
-        html: `
-            <div style="text-align: center;">
-                <p style="font-size: 1.1rem; margin-bottom: 1rem;">
-                    هل تريد إلغاء طلب <strong style="color: #ef4444;">${order.tableName}</strong>؟
-                </p>
-                <p style="color: #64748b; font-size: 0.9rem;">
-                    سيتم تحرير الطاولة وحذف الطلب نهائياً
-                </p>
-            </div>
-        `,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#64748b',
-        confirmButtonText: 'نعم، ألغي',
-        cancelButtonText: 'رجوع'
-    });
+    // حذف الطلب مباشرة بدون تأكيد
+    openOrders.splice(index, 1);
+    localStorage.setItem('openOrders', JSON.stringify(openOrders));
 
-    if (result.isConfirmed) {
-        // حذف الطلب
-        openOrders.splice(index, 1);
-        localStorage.setItem('openOrders', JSON.stringify(openOrders));
-
-        // تحرير الطاولة
-        const table = tables.find(t => t.id === order.tableId);
-        if (table) {
-            table.status = 'available';
-            table.orderId = null;
-            localStorage.setItem('tables', JSON.stringify(tables));
-        }
-
-        loadOpenOrders();
-
-        Swal.fire({
-            icon: 'success',
-            title: 'تم الإلغاء',
-            html: `
-                <div style="text-align: center;">
-                    <p>تم إلغاء الطلب وتحرير ${order.tableName}</p>
-                </div>
-            `,
-            timer: 1500,
-            showConfirmButton: false
-        });
+    // تحرير الطاولة
+    const table = tables.find(t => t.id === order.tableId);
+    if (table) {
+        table.status = 'available';
+        table.orderId = null;
+        localStorage.setItem('tables', JSON.stringify(tables));
     }
+
+    loadOpenOrders();
 }
 
 // تحميل طلب
