@@ -410,7 +410,7 @@ function generateOrderNumber() {
 function initializeTables() {
     const tables = [];
 
-    // الطاولات العادية أولاً
+    // الطاولات العادية أولاً (100 طاولة)
     for (let i = 1; i <= 100; i++) {
         tables.push({
             id: i,
