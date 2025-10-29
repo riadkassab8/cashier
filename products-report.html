@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقرير المنتجات الكامل - مقهى القهوة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Cairo', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #3e2723 0%, #5d4037 50%, #6d4c41 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 10px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 246, 227, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 32px rgba(139, 69, 19, 0.2);
+            border: 1px solid rgba(139, 69, 19, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #8b4513;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(139, 69, 19, 0.1);
+        }
+
+        .header p {
+            color: #6d4c41;
+            font-size: 0.85rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #8b4513 0%, #6d3410 100%);
+            color: white;
+        }
+
+        .btn-print:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(139, 69, 19, 0.3);
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            color: white;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(100, 116, 139, 0.3);
+        }
+
+        .summary {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 246, 227, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 32px rgba(139, 69, 19, 0.2);
+            border: 1px solid rgba(139, 69, 19, 0.1);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 10px;
+            background: rgba(139, 69, 19, 0.05);
+            border-radius: 8px;
+        }
+
+        .summary-item i {
+            font-size: 1.3rem;
+            color: #8b4513;
+            margin-bottom: 5px;
+        }
+
+        .summary-item h3 {
+            color: #6d4c41;
+            font-size: 0.75rem;
+            margin-bottom: 3px;
+        }
+
+        .summary-item p {
+            color: #8b4513;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .category-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 246, 227, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 32px rgba(139, 69, 19, 0.2);
+            border: 1px solid rgba(139, 69, 19, 0.1);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #8b4513;
+        }
+
+        .category-header i {
+            font-size: 1.3rem;
+            color: #8b4513;
+        }
+
+        .category-header h2 {
+            color: #8b4513;
+            font-size: 1.2rem;
+        }
+
+        .category-header .count {
+            margin-right: auto;
+            background: #8b4513;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .products-table thead {
+            background: linear-gradient(135deg, #8b4513 0%, #6d3410 100%);
+            color: white;
+        }
+
+        .products-table th {
+            padding: 12px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .products-table tbody tr {
+            border-bottom: 1px solid rgba(139, 69, 19, 0.1);
+            transition: all 0.2s;
+        }
+
+        .products-table tbody tr:hover {
+            background: rgba(139, 69, 19, 0.05);
+        }
+
+        .products-table td {
+            padding: 12px;
+            text-align: right;
+        }
+
+        .product-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .price {
+            color: #8b4513;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .stock {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .stock.high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .stock.medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .stock.low {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .pagination-container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 246, 227, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 12px;
+            box-shadow: 0 8px 32px rgba(139, 69, 19, 0.2);
+            border: 1px solid rgba(139, 69, 19, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 2px solid #8b4513;
+            background: white;
+            color: #8b4513;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #8b4513;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn.active {
+            background: #8b4513;
+            color: white;
+        }
+
+        .pagination-info {
+            padding: 6px 12px;
+            background: rgba(139, 69, 19, 0.1);
+            border-radius: 6px;
+            color: #8b4513;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+            min-height: 400px;
+        }
+
+        .product-card {
+            background: white;
+            border: 2px solid rgba(139, 69, 19, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(139, 69, 19, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.2);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .product-card h4 {
+            color: #3e2723;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            min-height: 2.2em;
+            line-height: 1.1;
+        }
+
+        .product-card .price {
+            color: #8b4513;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .product-card .stock {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+        }
+
+        @media (max-width: 1400px) {
+            .products-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .products-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .products-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .header h1 {
+                font-size: 1.2rem;
+            }
+
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .actions,
+            .pagination-container {
+                display: none;
+            }
+
+            .category-section {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-coffee"></i> تقرير المنتجات الكامل</h1>
+            <p>جميع الأقسام والمنتجات - مقهى القهوة</p>
+            <p style="color: #999; font-size: 0.9rem; margin-top: 10px;" id="reportDate"></p>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-print" onclick="window.print()">
+                <i class="fas fa-print"></i>
+                طباعة التقرير
+            </button>
+            <button class="btn btn-back" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-arrow-right"></i>
+                العودة للوحة التحكم
+            </button>
+        </div>
+
+        <div class="summary" id="summary"></div>
+
+        <div id="categoriesContainer"></div>
+    </div>
+
+    <script>
+        // عرض تاريخ التقرير
+        document.getElementById('reportDate').textContent = 'تاريخ التقرير: ' + new Date().toLocaleDateString('ar-SA', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        // تحميل المنتجات
+        const products = JSON.parse(localStorage.getItem('products')) || [];
+
+        // تصنيف المنتجات حسب الفئة
+        const categories = {
+            'hot-drinks': { name: 'مشروبات ساخنة', icon: 'fa-mug-hot', products: [] },
+            'cold-drinks': { name: 'عصائر', icon: 'fa-glass-water', products: [] },
+            'pastries': { name: 'كوكتيل', icon: 'fa-ice-cream', products: [] },
+            'shisha': { name: 'شيشة', icon: 'fa-wind', products: [] }
+        };
+
+        // تصنيف المنتجات
+        products.forEach(product => {
+            if (categories[product.category]) {
+                categories[product.category].products.push(product);
+            }
+        });
+
+        // حساب الإحصائيات
+        const totalProducts = products.length;
+        const totalValue = products.reduce((sum, p) => sum + (p.price * p.stock), 0);
+        const totalStock = products.reduce((sum, p) => sum + p.stock, 0);
+        const categoriesCount = Object.keys(categories).filter(key => categories[key].products.length > 0).length;
+
+        // عرض الملخص
+        document.getElementById('summary').innerHTML = `
+            <div class="summary-item">
+                <i class="fas fa-layer-group"></i>
+                <h3>عدد الأقسام</h3>
+                <p>${categoriesCount}</p>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-box"></i>
+                <h3>إجمالي المنتجات</h3>
+                <p>${totalProducts}</p>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-warehouse"></i>
+                <h3>إجمالي المخزون</h3>
+                <p>${totalStock}</p>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-coins"></i>
+                <h3>قيمة المخزون</h3>
+                <p>${totalValue.toFixed(2)} ج.م</p>
+            </div>
+        `;
+
+        // نظام Pagination
+        const PRODUCTS_PER_PAGE = 14; // 7 أعمدة × 2 صفوف
+        let currentPage = 1;
+        let currentCategoryKey = null;
+        let allCategories = [];
+
+        // تجهيز الأقسام
+        Object.keys(categories).forEach(categoryKey => {
+            if (categories[categoryKey].products.length > 0) {
+                allCategories.push({
+                    key: categoryKey,
+                    ...categories[categoryKey]
+                });
+            }
+        });
+
+        // عرض قسم معين
+        function displayCategory(categoryIndex, page = 1) {
+            const container = document.getElementById('categoriesContainer');
+            container.innerHTML = '';
+
+            if (categoryIndex >= allCategories.length) return;
+
+            const category = allCategories[categoryIndex];
+            currentCategoryKey = category.key;
+            currentPage = page;
+
+            const totalPages = Math.ceil(category.products.length / PRODUCTS_PER_PAGE);
+            const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
+            const endIndex = startIndex + PRODUCTS_PER_PAGE;
+            const paginatedProducts = category.products.slice(startIndex, endIndex);
+
+            const section = document.createElement('div');
+            section.className = 'category-section';
+
+            let productsHTML = paginatedProducts.map((product) => {
+                const stockClass = product.stock > 50 ? 'high' : product.stock > 20 ? 'medium' : 'low';
+                const stockText = product.stock > 50 ? 'متوفر' : product.stock > 20 ? 'متوسط' : 'منخفض';
+
+                return `
+                    <div class="product-card">
+                        <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/200'">
+                        <h4>${product.name}</h4>
+                        <div class="price">${product.price.toFixed(2)} ج.م</div>
+                        <span class="stock ${stockClass}">${product.stock} - ${stockText}</span>
+                    </div>
+                `;
+            }).join('');
+
+            section.innerHTML = `
+                <div class="category-header">
+                    <i class="fas ${category.icon}"></i>
+                    <h2>${category.name}</h2>
+                    <span class="count">${category.products.length} منتج</span>
+                </div>
+                <div class="products-grid">
+                    ${productsHTML}
+                </div>
+            `;
+
+            container.appendChild(section);
+
+            // عرض Pagination
+            renderPagination(categoryIndex, totalPages);
+        }
+
+        // عرض أزرار Pagination
+        function renderPagination(categoryIndex, totalPages) {
+            let paginationHTML = `
+                <div class="pagination-container">
+                    <button class="pagination-btn" onclick="changeCategory(${categoryIndex - 1})" ${categoryIndex === 0 ? 'disabled' : ''}>
+                        <i class="fas fa-chevron-right"></i> القسم السابق
+                    </button>
+            `;
+
+            if (totalPages > 1) {
+                paginationHTML += `
+                    <button class="pagination-btn" onclick="changePage(${categoryIndex}, ${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                        <i class="fas fa-angle-right"></i>
+                    </button>
+                    <span class="pagination-info">صفحة ${currentPage} من ${totalPages}</span>
+                    <button class="pagination-btn" onclick="changePage(${categoryIndex}, ${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                        <i class="fas fa-angle-left"></i>
+                    </button>
+                `;
+            } else {
+                paginationHTML += `<span class="pagination-info">${allCategories[categoryIndex].name}</span>`;
+            }
+
+            paginationHTML += `
+                    <button class="pagination-btn" onclick="changeCategory(${categoryIndex + 1})" ${categoryIndex === allCategories.length - 1 ? 'disabled' : ''}>
+                        القسم التالي <i class="fas fa-chevron-left"></i>
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('categoriesContainer').insertAdjacentHTML('beforeend', paginationHTML);
+        }
+
+        // تغيير الصفحة
+        function changePage(categoryIndex, page) {
+            displayCategory(categoryIndex, page);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // تغيير القسم
+        function changeCategory(categoryIndex) {
+            if (categoryIndex >= 0 && categoryIndex < allCategories.length) {
+                displayCategory(categoryIndex, 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // عرض أول قسم
+        if (allCategories.length > 0) {
+            displayCategory(0);
+        }
+    </script>
+</body>
+
+</html>

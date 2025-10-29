@@ -54,7 +54,7 @@ if (currentUser.role === 'cashier' || currentUser.role === 'supervisor') {
 }
 
 // نظام إدارة المنتجات مع Version Control
-const PRODUCTS_VERSION = '3.4'; // غير هذا الرقم عند تحديث المنتجات
+const PRODUCTS_VERSION = '3.5'; // غير هذا الرقم عند تحديث المنتجات
 
 function getDefaultProducts() {
     return [
@@ -158,6 +158,30 @@ function getDefaultProducts() {
         { id: 87, name: 'ايس كريم 2 بولا', price: 15.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=200&h=200&fit=crop', stock: 100 },
         { id: 88, name: 'ايس كريم 3 بولا', price: 20.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=200&h=200&fit=crop', stock: 100 },
         { id: 89, name: 'ايس لاتيه', price: 18.00, category: 'pastries', image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=200&h=200&fit=crop', stock: 100 },
+
+        // بيتزا
+        { id: 200, name: 'بيتزا مارجريتا', price: 45.00, category: 'pizza', image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=200&h=200&fit=crop', stock: 50 },
+        { id: 201, name: 'بيتزا بيبروني', price: 55.00, category: 'pizza', image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=200&h=200&fit=crop', stock: 50 },
+        { id: 202, name: 'بيتزا خضار', price: 50.00, category: 'pizza', image: 'https://images.unsplash.com/photo-1511689660979-10d2b1aada49?w=200&h=200&fit=crop', stock: 50 },
+        { id: 203, name: 'بيتزا فراخ', price: 60.00, category: 'pizza', image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop', stock: 50 },
+        { id: 204, name: 'بيتزا سي فود', price: 70.00, category: 'pizza', image: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=200&h=200&fit=crop', stock: 50 },
+        { id: 205, name: 'بيتزا لحم', price: 65.00, category: 'pizza', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&h=200&fit=crop', stock: 50 },
+        { id: 206, name: 'بيتزا مشكل جبن', price: 55.00, category: 'pizza', image: 'https://images.unsplash.com/photo-1571407970349-bc81e7e96a47?w=200&h=200&fit=crop', stock: 50 },
+        { id: 207, name: 'بيتزا سوسيس', price: 50.00, category: 'pizza', image: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=200&h=200&fit=crop', stock: 50 },
+        { id: 208, name: 'بيتزا مشروم', price: 52.00, category: 'pizza', image: 'https://images.unsplash.com/photo-1595854341625-f33ee10dbf94?w=200&h=200&fit=crop', stock: 50 },
+        { id: 209, name: 'بيتزا سوبريم', price: 75.00, category: 'pizza', image: 'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=200&h=200&fit=crop', stock: 50 },
+
+        // بينا (باستا)
+        { id: 300, name: 'باستا ألفريدو', price: 40.00, category: 'pasta', image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=200&h=200&fit=crop', stock: 50 },
+        { id: 301, name: 'باستا بولونيز', price: 45.00, category: 'pasta', image: 'https://images.unsplash.com/photo-1598866594230-a7c12756260f?w=200&h=200&fit=crop', stock: 50 },
+        { id: 302, name: 'باستا كاربونارا', price: 50.00, category: 'pasta', image: 'https://images.unsplash.com/photo-1612874742237-6526221588e3?w=200&h=200&fit=crop', stock: 50 },
+        { id: 303, name: 'باستا أرابياتا', price: 42.00, category: 'pasta', image: 'https://images.unsplash.com/photo-1611270629569-8b357cb88da9?w=200&h=200&fit=crop', stock: 50 },
+        { id: 304, name: 'باستا بيستو', price: 48.00, category: 'pasta', image: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=200&h=200&fit=crop', stock: 50 },
+        { id: 305, name: 'باستا سي فود', price: 65.00, category: 'pasta', image: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=200&h=200&fit=crop', stock: 50 },
+        { id: 306, name: 'باستا فراخ', price: 55.00, category: 'pasta', image: 'https://images.unsplash.com/photo-1645112411341-6c4fd023714a?w=200&h=200&fit=crop', stock: 50 },
+        { id: 307, name: 'باستا خضار', price: 38.00, category: 'pasta', image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=200&h=200&fit=crop', stock: 50 },
+        { id: 308, name: 'لازانيا', price: 60.00, category: 'pasta', image: 'https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=200&h=200&fit=crop', stock: 50 },
+        { id: 309, name: 'باستا بالجبن', price: 45.00, category: 'pasta', image: 'https://images.unsplash.com/photo-1608219992759-8d74ed8d76eb?w=200&h=200&fit=crop', stock: 50 },
 
         // شيشة
         { id: 90, name: 'لاي طبي', price: 50.00, category: 'shisha', image: 'https://images.unsplash.com/photo-1574238752695-675b86d49267?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170', stock: 30 },

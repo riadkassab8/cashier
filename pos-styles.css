@@ -302,6 +302,16 @@ body.pos-page {
     border-color: #795548;
 }
 
+.category-tab.pizza.active {
+    background: #e74c3c;
+    border-color: #c0392b;
+}
+
+.category-tab.pasta.active {
+    background: #f39c12;
+    border-color: #d68910;
+}
+
 .category-tab.shisha.active {
     background: #51b773;
     border-color: #ebfdf1;
